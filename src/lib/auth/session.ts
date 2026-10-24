@@ -1,5 +1,6 @@
 import "server-only";
 
+import { io } from "next/cache";
 import { cookies } from "next/headers";
 import * as oidc from "openid-client";
 import { cache } from "react";
@@ -69,6 +70,8 @@ export function isExpiring(jwt: string, nowSeconds = Date.now() / 1000): boolean
  */
 export const getSessionAccessToken = cache(async (): Promise<string | null> => {
 	const store = await cookies();
+	// The expiry check reads the clock; `Date.now()` in a prerender makes the route blocking.
+	await io();
 	const accessToken = store.get(ACCESS_TOKEN_COOKIE)?.value;
 	if (accessToken && !isExpiring(accessToken)) {
 		return accessToken;
