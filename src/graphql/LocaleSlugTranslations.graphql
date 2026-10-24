@@ -29,6 +29,9 @@ fragment ProductLocaleSlugTranslations on Product {
 	slugKO: translation(languageCode: KO) {
 		slug
 	}
+	slugZH: translation(languageCode: ZH) {
+		slug
+	}
 }
 
 fragment CategoryLocaleSlugTranslations on Category {
@@ -54,6 +57,9 @@ fragment CategoryLocaleSlugTranslations on Category {
 		slug
 	}
 	slugKO: translation(languageCode: KO) {
+		slug
+	}
+	slugZH: translation(languageCode: ZH) {
 		slug
 	}
 }
@@ -83,6 +89,9 @@ fragment CollectionLocaleSlugTranslations on Collection {
 	slugKO: translation(languageCode: KO) {
 		slug
 	}
+	slugZH: translation(languageCode: ZH) {
+		slug
+	}
 }
 
 fragment PageLocaleSlugTranslations on Page {
@@ -108,6 +117,9 @@ fragment PageLocaleSlugTranslations on Page {
 		slug
 	}
 	slugKO: translation(languageCode: KO) {
+		slug
+	}
+	slugZH: translation(languageCode: ZH) {
 		slug
 	}
 }

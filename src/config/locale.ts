@@ -74,6 +74,13 @@ export const LOCALE_DEFINITIONS = {
 		htmlLang: "ko",
 		ogLocale: "ko_KR",
 	},
+	/** Simplified Chinese — slug `zh`; query base enum `ZH` (dialects `ZH_HANS`/`ZH_HANT` chosen in Saleor). */
+	zh: {
+		bcp47: "zh-CN",
+		graphqlLanguageCode: "ZH",
+		htmlLang: "zh",
+		ogLocale: "zh_CN",
+	},
 } as const satisfies Record<string, LocaleDefinition>;
 
 function parseEnvLocaleList(raw: string | undefined): LocaleSlug[] | null {

@@ -37,6 +37,22 @@ describe("buildLocaleSlugMap", () => {
 			ja: "kimono-jp",
 		});
 	});
+
+	it("resolves ZH via slugZH alias from LOCALE_DEFINITIONS graphqlLanguageCode", () => {
+		vi.stubEnv("NEXT_PUBLIC_STOREFRONT_LOCALES", "en,zh");
+		vi.stubEnv("NEXT_PUBLIC_DEFAULT_LOCALE", "en");
+
+		expect(
+			buildLocaleSlugMap({
+				slug: "hoodie",
+				slugEN: { slug: null },
+				slugZH: { slug: "weiyi" },
+			}),
+		).toEqual({
+			en: "hoodie",
+			zh: "weiyi",
+		});
+	});
 });
 
 describe("buildCatalogPathSuffixByLocale", () => {
