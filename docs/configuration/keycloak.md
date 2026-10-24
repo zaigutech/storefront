@@ -29,15 +29,33 @@ Saleor accepts a Keycloak access token once its built-in OpenID Connect plugin k
 keys and user info endpoint. Dashboard → **Configuration → Plugins → OpenID Connect**, global
 configuration, active:
 
-| Field                       | Value                                                 |
-| --------------------------- | ----------------------------------------------------- |
-| JSON Web Key Set URL        | `<KEYCLOAK_ISSUER>/protocol/openid-connect/certs`     |
-| User info URL               | `<KEYCLOAK_ISSUER>/protocol/openid-connect/userinfo`  |
-| Use OAuth scope permissions | off (customers only; staff keep signing in to Saleor) |
+| Field                       | Value                                                                       |
+| --------------------------- | --------------------------------------------------------------------------- |
+| Client ID                   | `eos-storefront`                                                            |
+| Client secret               | the `eos-storefront` secret                                                 |
+| JSON Web Key Set URL        | `<Keycloak URL Saleor reaches>/realms/eos/protocol/openid-connect/certs`    |
+| User info URL               | `<Keycloak URL Saleor reaches>/realms/eos/protocol/openid-connect/userinfo` |
+| Use OAuth scope permissions | off (customers only; staff keep signing in to Saleor)                       |
 
-Leave the authorization, token and logout URLs empty: the storefront, not Saleor, runs the flow.
-Saleor must reach Keycloak at the issuer's own URL, because Keycloak's user info endpoint rejects a
-token whose issuer does not match the URL it is called on.
+The plugin refuses to activate without a client ID and secret, but uses them only for its own
+sign-in flow, which stays off: leave the authorization, token and logout URLs empty, because the
+storefront runs the flow. To script it, `pluginUpdate(id: "mirumee.authentication.openidconnect")`
+with a token holding `MANAGE_PLUGINS` sets the same fields.
+
+Keycloak must issue tokens under one fixed issuer (`KC_HOSTNAME`): its user info endpoint rejects a
+token whose issuer differs from the one it would issue on that request. With `KC_HOSTNAME` set,
+Saleor may reach Keycloak by any address:
+
+| Environment | `KC_HOSTNAME`           | Keycloak URL Saleor reaches                         |
+| ----------- | ----------------------- | --------------------------------------------------- |
+| Production  | `auth.zaigu.com`        | `https://auth.zaigu.com` (must resolve from Saleor) |
+| Local       | `http://localhost:8081` | `http://172.17.0.1:8081` (the Docker host)          |
+
+Check from the Saleor container that the URL answers with the expected issuer:
+
+```bash
+docker exec <saleor-api> python -c "import json,urllib.request;print(json.load(urllib.request.urlopen('<Keycloak URL Saleor reaches>/realms/eos/.well-known/openid-configuration'))['issuer'])"
+```
 
 On the first request with a customer's token Saleor finds the customer by `sub`, then by email, or
 creates one (and links earlier guest orders with that email). EOS creates the same customer from the
