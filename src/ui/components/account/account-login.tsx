@@ -1,29 +1,9 @@
-import { Suspense } from "react";
-import { LoginForm } from "@/ui/components/login-form";
+"use client";
 
-function LoginFormSkeleton() {
-	return (
-		<div className="mx-auto my-16 w-full max-w-md">
-			<div className="rounded-lg border border-border bg-card p-8 shadow-sm">
-				<div className="mb-6 flex flex-col items-center gap-2">
-					<div className="h-7 w-40 animate-pulse rounded bg-secondary" />
-					<div className="h-4 w-56 animate-pulse rounded bg-secondary" />
-				</div>
-				<div className="space-y-4">
-					<div className="h-12 w-full animate-pulse rounded-md bg-secondary" />
-					<div className="h-12 w-full animate-pulse rounded-md bg-secondary" />
-					<div className="h-12 w-full animate-pulse rounded-md bg-secondary" />
-				</div>
-			</div>
-		</div>
-	);
-}
+import { usePathname } from "next/navigation";
+import { SignInPanel } from "@/ui/components/auth/sign-in-panel";
 
-/** Login UI for /account when the user is signed out or the session is invalid. */
+/** Sign-in for /account when the user is signed out; Keycloak returns to the page they asked for. */
 export function AccountLogin() {
-	return (
-		<Suspense fallback={<LoginFormSkeleton />}>
-			<LoginForm />
-		</Suspense>
-	);
+	return <SignInPanel returnTo={usePathname()} />;
 }

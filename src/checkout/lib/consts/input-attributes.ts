@@ -37,10 +37,8 @@ export function formatSectionCountryAutocomplete(section: AddressAutocompleteSec
 	return `${section} country`;
 }
 
-/** Contact / auth fields (not address-scoped). */
+/** Contact fields (not address-scoped). */
 export const contactFieldAttributes = {
 	email: { autoComplete: "email", inputMode: "email" as const, name: "email" },
-	newPassword: { autoComplete: "new-password", name: "password" },
-	currentPassword: { autoComplete: "current-password", name: "password" },
 	promoCode: { autoComplete: "off", name: "promoCode", inputMode: "text" as const },
 } as const;

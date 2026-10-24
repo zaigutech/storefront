@@ -157,20 +157,15 @@
 		"metadata": {
 			"loginTitle": "サインイン",
 			"loginDescription": "アカウントにサインインして、注文履歴や保存済み住所にアクセスします。",
-			"signupTitle": "アカウント作成",
-			"signupDescription": "新しいアカウントを作成して、住所と注文履歴を保存します。",
 			"accountTitle": "マイアカウント"
 		},
 		"fields": {
 			"email": "メール",
 			"emailAddress": "メールアドレス",
-			"password": "パスワード",
 			"firstName": "名",
 			"lastName": "姓",
 			"confirmPassword": "パスワード（確認）",
-			"currentPassword": "現在のパスワード",
 			"newPassword": "新しいパスワード",
-			"confirmNewPassword": "新しいパスワード（確認）",
 			"name": "名前",
 			"companyOptional": "会社名（任意）",
 			"streetAddress": "住所",
@@ -194,105 +189,37 @@
 		},
 		"placeholders": {
 			"email": "you@example.com",
-			"password": "パスワードを入力",
 			"firstName": "名",
 			"lastName": "姓",
-			"newPasswordMin": "8文字以上…",
 			"confirmPassword": "パスワードを再入力",
-			"reenterPassword": "パスワードを再入力",
 			"countryCode": "JP"
 		},
 		"common": {
 			"cancel": "キャンセル",
-			"save": "保存",
 			"saving": "保存中…",
 			"edit": "編集",
 			"delete": "削除",
-			"updated": "更新しました",
-			"showPassword": "パスワードを表示",
-			"hidePassword": "パスワードを隠す",
 			"free": "無料",
 			"qty": "数量: {count}",
 			"itemCount": "{count, plural, other {# 点}}",
-			"notSet": "未設定",
-			"change": "変更",
-			"changing": "変更中…",
-			"sending": "送信中…"
+			"change": "変更"
 		},
 		"errors": {
 			"invalidEmail": "有効なメールアドレスを入力してください",
-			"invalidEmailFirst": "先に有効なメールアドレスを入力してください",
-			"passwordRequired": "パスワードを入力してください",
-			"passwordMinLength": "パスワードは8文字以上にしてください",
-			"passwordsMismatch": "パスワードが一致しません",
-			"newPasswordRequired": "新しいパスワードを入力してください",
 			"generic": "エラーが発生しました。もう一度お試しください。",
-			"signInFailed": "サインインに失敗しました。もう一度お試しください。",
-			"invalidCredentials": "メールアドレスまたはパスワードが正しくありません。",
-			"rateLimited": "サインインの試行回数が多すぎます。しばらくしてからお試しください。",
-			"resetLinkFailed": "リセットリンクの送信に失敗しました",
-			"accountExists": "このメールアドレスのアカウントは既に存在します。サインインしてください。",
-			"createAccountFailed": "アカウントの作成に失敗しました",
-			"invalidResetToken": "このパスワードリセットリンクは期限切れです。新しいリンクをリクエストしてください。",
-			"setPasswordFailed": "パスワードの設定に失敗しました",
-			"invalidConfirmToken": "この確認リンクは期限切れか、既に使用されています。サインインするか、再度登録してください。",
-			"confirmFailed": "アカウントの確認に失敗しました",
 			"loadOrdersFailed": "注文を読み込めませんでした。しばらくしてからもう一度お試しください。",
 			"loadOrderFailed": "この注文を読み込めませんでした。もう一度お試しください。",
 			"loadRecentOrdersFailed": "最近の注文を読み込めませんでした。",
-			"updateProfileFailed": "プロフィールの更新に失敗しました",
-			"changePasswordFailed": "パスワードの変更に失敗しました",
 			"createAddressFailed": "住所の作成に失敗しました",
 			"updateAddressFailed": "住所の更新に失敗しました",
 			"deleteAddressFailed": "住所の削除に失敗しました",
-			"setDefaultAddressFailed": "既定の住所の設定に失敗しました",
-			"deleteAccountFailed": "アカウント削除のリクエストに失敗しました"
+			"setDefaultAddressFailed": "既定の住所の設定に失敗しました"
 		},
 		"login": {
 			"title": "おかえりなさい",
 			"noAccount": "アカウントをお持ちでないですか？",
 			"signUp": "新規登録",
-			"forgotPassword": "パスワードをお忘れですか？",
-			"resendResetLink": "リセットリンクを再送信",
-			"submit": "サインイン",
-			"submitting": "サインイン中…",
-			"resetSent": "{email} のアカウントが存在する場合、パスワードリセットリンクを送信しました。注：リセットリンクのリクエストは15分に1回までです。"
-		},
-		"signup": {
-			"title": "アカウントを作成",
-			"hasAccount": "すでにアカウントをお持ちですか？",
-			"signIn": "サインイン",
-			"submit": "アカウント作成",
-			"submitting": "作成中…",
-			"successTitle": "アカウントを作成しました！",
-			"successBody": "アカウント確認のため、メールをご確認ください。",
-			"goToSignIn": "サインインへ",
-			"terms": "アカウントを作成すると、<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意したものとみなされます。",
-			"termsLink": "利用規約",
-			"privacyLink": "プライバシーポリシー"
-		},
-		"setPassword": {
-			"title": "新しいパスワードを設定",
-			"subtitle": "{email} の新しいパスワードを入力してください",
-			"submit": "パスワードを更新",
-			"submitting": "更新中…",
-			"backToSignIn": "サインインに戻る",
-			"successTitle": "パスワードを更新しました！",
-			"successBody": "パスワードがリセットされました。サインイン済みです。",
-			"redirecting": "ストアへ移動しています…"
-		},
-		"confirm": {
-			"successTitle": "アカウントを確認しました",
-			"successBody": "{email} のアカウントが有効になりました。",
-			"signIn": "サインイン",
-			"continueShopping": "買い物を続ける",
-			"errorTitle": "アカウントを確認できませんでした",
-			"goToSignIn": "サインインへ",
-			"title": "アカウントを確認",
-			"body": "{email} のパスワードを入力して、アカウント確認を完了してください。",
-			"submit": "アカウントを確認",
-			"submitting": "確認中…",
-			"tryAgain": "再試行"
+			"submit": "サインイン"
 		},
 		"nav": {
 			"ariaLabel": "アカウント",
@@ -364,7 +291,9 @@
 		"settings": {
 			"title": "設定",
 			"subtitle": "アカウント設定を管理",
-			"memberSince": "{date} からメンバー"
+			"memberSince": "{date} からメンバー",
+			"manageAccount": "アカウントを管理",
+			"manageAccountHint": "名前・メールアドレス・パスワードはログインアカウントで変更できます。"
 		},
 		"addresses": {
 			"title": "住所",
@@ -382,17 +311,6 @@
 			"defaultBilling": "既定の請求先",
 			"makeDefaultShipping": "既定の配送先にする",
 			"makeDefaultBilling": "既定の請求先にする"
-		},
-		"deleteAccount": {
-			"title": "アカウント削除",
-			"description": "アカウントと関連データを完全に削除します。",
-			"submit": "アカウントを削除",
-			"confirm": "はい、アカウントを削除します",
-			"confirmBody": "この操作は取り消せません。アカウント削除前に確認メールが届きます。",
-			"emailSent": "確認メールを送信しました。受信トレイを確認してアカウント削除を完了してください。"
-		},
-		"changePassword": {
-			"submit": "パスワードを変更"
 		},
 		"unavailable": {
 			"title": "アカウントを読み込めません",
@@ -446,7 +364,6 @@
 			"discountRemoveFailed": "割引コードの削除に失敗しました。",
 			"invalidValue": "無効な値です",
 			"updateEmailFailed": "メールの更新に失敗しました",
-			"createAccountFailed": "アカウントの作成に失敗しました",
 			"updateAddressFailed": "住所の更新に失敗しました",
 			"itemUnavailableTitle": "An item isn’t available",
 			"itemUnavailableMessage": "This item can’t be fulfilled for the address you entered. Try a different destination.",
@@ -460,15 +377,6 @@
 		"contact": {
 			"title": "連絡先",
 			"haveAccount": "アカウントをお持ちですか？",
-			"createAccountLabel": "次回のためにアカウントを作成する",
-			"activationNotice": "チェックアウト後、サインイン前にアカウント有効化のメールが届きます。",
-			"guestCheckout": "ゲストチェックアウト",
-			"newCustomer": "初めてのご利用ですか？",
-			"signInTitle": "サインイン",
-			"resetPasswordTitle": "パスワードをリセット",
-			"resetPasswordSubtitle": "アカウントの新しいパスワードを入力してください",
-			"processing": "処理中…",
-			"passwordMinPlaceholder": "パスワード（8文字以上）",
 			"signedIn": "サインイン済み"
 		},
 		"summary": {
@@ -597,8 +505,6 @@
 		},
 		"server": {
 			"marketingSaveFailed": "マーケティング設定の保存に失敗しました",
-			"invalidRedirectUrl": "無効なリダイレクトURLです",
-			"createAccountFailed": "アカウントの作成に失敗しました",
 			"noSaleorResponse": "Saleorからの応答がありません",
 			"shippingMethodsFailed": "配送方法の読み込みに失敗しました",
 			"gatewayInitFailed": "決済ゲートウェイの初期化に失敗しました",

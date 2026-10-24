@@ -10,40 +10,32 @@ import { buildStorefrontPath } from "@/lib/storefront-path";
 export type LogoutOptions = {
 	locale?: string;
 	channel?: string;
-	/** Override post-logout destination. Defaults to canonical browse home or `/`. */
+	/** Override post-logout destination (a path). Defaults to canonical browse home or `/`. */
 	redirectTo?: string;
-	/** Reload the current URL (e.g. checkout in-flow sign-out). */
+	/** Come back to the current URL (e.g. checkout in-flow sign-out). */
 	stayOnPage?: boolean;
 };
 
-/** End Saleor session on the server and hard-navigate to bust Router Cache. */
+/** Ends the session here and at Keycloak, then lands on the destination with a fresh document. */
 export function useLogout() {
 	return useCallback(async (options?: LogoutOptions) => {
+		const destination = options?.stayOnPage
+			? `${window.location.pathname}${window.location.search}`
+			: (options?.redirectTo ??
+				(options?.channel
+					? buildStorefrontPath(resolveBrowseLocaleSlugWithFallback(options.locale), options.channel)
+					: "/"));
+
+		let target = destination;
 		try {
-			await logout();
+			target = await logout(destination);
 		} catch {
-			// Checkout detach / server cookie clear is best-effort.
+			// Checkout detach / Keycloak discovery failed — the destination still reloads signed out
+			// when the cookies were cleared.
 		}
 
 		// Other tabs re-render their auth chrome on next focus; this tab hard-navigates.
 		bumpChromeVersion();
-
-		if (options?.stayOnPage) {
-			window.location.reload();
-			return;
-		}
-
-		if (options?.redirectTo) {
-			window.location.assign(options.redirectTo);
-			return;
-		}
-
-		if (options?.channel) {
-			const locale = resolveBrowseLocaleSlugWithFallback(options.locale);
-			window.location.assign(buildStorefrontPath(locale, options.channel));
-			return;
-		}
-
-		window.location.assign("/");
+		window.location.assign(target);
 	}, []);
 }

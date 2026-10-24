@@ -6,7 +6,7 @@ import { CheckCircle, Mail, MapPin, Package, CreditCard, Truck } from "lucide-re
 import { useTranslations } from "next-intl";
 
 import { clearPaymentCompleting } from "@/checkout/lib/payment/checkout-payment-completion";
-import { navigateToStorefrontHome } from "@/lib/auth";
+import { navigateToStorefrontHome, signInHref } from "@/lib/auth";
 import { useCheckoutBrowseLocale } from "@/checkout/providers/checkout-browse";
 import { useCheckoutUser } from "@/checkout/providers/checkout-user";
 import { Button } from "@/ui/components/ui/button";
@@ -207,7 +207,9 @@ export const OrderConfirmation = () => {
 									</Button>
 									{verified && channel && !authenticated ? (
 										<a
-											href={buildStorefrontPath(storefrontLocale, channel, "/signup")}
+											href={signInHref(buildStorefrontPath(storefrontLocale, channel, "/account"), {
+												signup: true,
+											})}
 											className="text-sm text-muted-foreground underline underline-offset-2"
 										>
 											{t("createAccount")}

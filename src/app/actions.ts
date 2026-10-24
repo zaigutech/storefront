@@ -2,7 +2,10 @@
 
 import { cookies } from "next/headers";
 import { refresh } from "next/cache";
-import { signOutSession } from "@/lib/auth/bff-server";
+import * as oidc from "openid-client";
+import { getKeycloakConfiguration, storefrontUrl } from "@/lib/auth/keycloak";
+import { safeReturnPath } from "@/lib/auth/return-path";
+import { clearSession, getIdToken } from "@/lib/auth/session";
 import { mutate } from "@/lib/saleor";
 import {
 	CheckoutAddLineDocument,
@@ -20,22 +23,11 @@ import * as Checkout from "@/lib/checkout";
 // `bumpChromeVersion()` — see src/lib/chrome-sync.ts and the `paper-vercel-cost` rule.
 
 /**
- * SDK `signOut` only clears cookies for the current NEXT_PUBLIC_SALEOR_API_URL.
- * Cookies minted against a previously configured Saleor instance keep matching
- * `hasAuthSession()`'s marker scan, wedging the header in "unavailable" — sweep
- * every Saleor auth cookie regardless of API URL.
+ * Ends the session here and returns Keycloak's end-session URL; the caller navigates there,
+ * which ends the Keycloak session too (otherwise the next sign-in skips the password) and
+ * comes back to `returnTo`.
  */
-async function clearAllSaleorAuthCookies() {
-	const cookieStore = await cookies();
-	for (const cookie of cookieStore.getAll()) {
-		if (cookie.name.includes("saleor_auth")) {
-			cookieStore.delete(cookie.name);
-		}
-	}
-}
-
-/** Callers hard-navigate afterwards (see `useLogout`), which picks up the cleared cookies. */
-export async function logout() {
+export async function logout(returnTo: string): Promise<string> {
 	const cookieStore = await cookies();
 
 	for (const cookie of cookieStore.getAll()) {
@@ -45,8 +37,14 @@ export async function logout() {
 		await Checkout.detachCustomer(cookie.value);
 	}
 
-	await signOutSession();
-	await clearAllSaleorAuthCookies();
+	const idToken = getIdToken(cookieStore);
+	clearSession(cookieStore);
+
+	const configuration = await getKeycloakConfiguration();
+	return oidc.buildEndSessionUrl(configuration, {
+		post_logout_redirect_uri: storefrontUrl(safeReturnPath(returnTo)).href,
+		...(idToken ? { id_token_hint: idToken } : { client_id: configuration.clientMetadata().client_id }),
+	}).href;
 }
 
 export async function saveCheckoutId(channel: string, checkoutId: string) {

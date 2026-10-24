@@ -13,7 +13,7 @@ type LogoutButtonProps = {
 } & Omit<ComponentProps<"button">, "type">;
 
 /**
- * Ends the Saleor session on server (checkout detach + cookies) and hard-navigates.
+ * Ends the session here and at Keycloak (checkout detach + cookies) and hard-navigates.
  * Forwards ref/onClick for Radix `DropdownMenuItem asChild` composition.
  */
 export const LogoutButton = forwardRef<HTMLButtonElement, LogoutButtonProps>(function LogoutButton(

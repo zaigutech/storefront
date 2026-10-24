@@ -14,7 +14,7 @@ const DEFAULT_LIMIT = 10;
 const DEFAULT_WINDOW_MS = 15 * 60 * 1000;
 
 /**
- * In-memory sliding-window limiter for auth API routes.
+ * In-memory sliding-window limiter for unauthenticated lookups (order lookup).
  * Best-effort on serverless (per instance); pair with Vercel WAF for production abuse.
  */
 export function checkRateLimit(
@@ -38,46 +38,4 @@ export function checkRateLimit(
 
 	bucket.count += 1;
 	return { allowed: true };
-}
-
-export function getClientIp(request: Request): string {
-	const forwarded = request.headers.get("x-forwarded-for");
-	if (forwarded) {
-		return forwarded.split(",")[0]?.trim() || "unknown";
-	}
-
-	return request.headers.get("x-real-ip") ?? "unknown";
-}
-
-export function rateLimitResponse(retryAfterSeconds: number): Response {
-	return Response.json(
-		{
-			errors: [
-				{
-					message: "Too many attempts. Please try again later.",
-					code: "RATE_LIMITED",
-				},
-			],
-		},
-		{
-			status: 429,
-			headers: { "Retry-After": String(retryAfterSeconds) },
-		},
-	);
-}
-
-/** Returns a 429 response when the client exceeds the auth route limit. */
-export function rejectIfRateLimited(
-	request: Request,
-	action: "login" | "register" | "set-password" | "reset-password" | "confirm-account",
-	options?: RateLimitOptions,
-): Response | null {
-	const key = `${action}:${getClientIp(request)}`;
-	const result = checkRateLimit(key, options);
-
-	if (!result.allowed) {
-		return rateLimitResponse(result.retryAfterSeconds);
-	}
-
-	return null;
 }

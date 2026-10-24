@@ -105,5 +105,14 @@
 			"skipped": false
 		}
 	],
-	"coreOverrides": []
+	"coreOverrides": [
+		{
+			"path": "src/lib/saleor/client.ts",
+			"reason": "Session auth sends the Keycloak access token (getSessionAccessToken) instead of @saleor/auth-sdk fetchWithAuth; Saleor accepts it through its OpenID Connect plugin."
+		},
+		{
+			"path": "src/lib/saleor/operations.ts",
+			"reason": "Sign-up, password change/reset and account deletion moved to Keycloak; their Saleor operations are removed."
+		}
+	]
 }

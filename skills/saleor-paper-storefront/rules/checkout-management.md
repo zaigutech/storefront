@@ -18,7 +18,7 @@ The checkout id (a base64 Saleor global id, e.g. `Checkout:a8c7…`) lives in **
 
 ## Auth + data loading (RSC + client sync)
 
-Sign-in uses the same BFF as storefront (`loginWithBff()` → `POST /api/auth/login`); `CheckoutUserProvider` hydrates `me` from the RSC page; after sign-in call `refetchUser()` → `router.refresh()`. Sign-out = `logout()` action + `detachCheckoutCustomer` when needed.
+Sign-in leaves the checkout for Keycloak and comes back to it (`signInHref(currentPathAndQuery)` → `GET /api/auth/login`); `CheckoutUserProvider` hydrates `me` from the RSC page of the returning hard navigation. Sign-out = `logout()` action + `detachCheckoutCustomer` when needed.
 
 1. **RSC page** (`checkout/page.tsx`) fetches the full checkout (`fetchCheckoutOnServer`), `me`, order, and channel countries; passes `initialCheckout` when `loadState === "ready"`.
 2. **Client** `CheckoutDataProvider` hydrates from `initialCheckout`. RSC updates **merge** via `adoptCheckoutSnapshot`; explicit `refreshCheckout()` **replaces** state. Cart mutations revalidate `/checkout` via `revalidateStorefrontChrome`; use `useRefreshCheckoutRsc()` after auth or address-book changes.

@@ -61,9 +61,6 @@ const LOADER_DIRS = [
 
 /** Untyped queries. Anywhere else must use mutate() so the registry applies. */
 const RAW_MUTATION_ALLOW = new Set([
-	"src/lib/auth/confirm-account.ts",
-	"src/app/api/auth/register/route.ts",
-	"src/app/api/auth/reset-password/route.ts",
 	"src/app/(checkout)/actions.ts",
 	"src/checkout/lib/server/fetch-channel-default-country.ts",
 ]);

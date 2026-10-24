@@ -252,7 +252,7 @@ type FetchResult = GraphQLSuccess<Response> | GraphQLFailure;
 type RetryOverrides = {
 	maxRetries?: number;
 	timeoutMs?: number;
-	/** When set, session auth honors `timeoutMs` via AbortSignal. Default session fetches stay untimed. */
+	/** When set, session auth honors `timeoutMs`. Default session fetches stay untimed. */
 	abortSession?: boolean;
 };
 
@@ -279,19 +279,20 @@ async function fetchWithRetry(
 			let response: Response;
 
 			if (auth === "session") {
-				const { getServerAuthClient } = await import("@/lib/auth/server");
-				const client = await getServerAuthClient();
-				if (retry?.abortSession) {
-					const controller = new AbortController();
-					const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-					try {
-						response = await client.fetchWithAuth(url, { ...input, signal: controller.signal });
-					} finally {
-						clearTimeout(timeoutId);
-					}
-				} else {
-					response = await client.fetchWithAuth(url, input);
-				}
+				const { getSessionAccessToken } = await import("@/lib/auth/session");
+				const accessToken = await getSessionAccessToken();
+				const sessionInput: RequestInit = accessToken
+					? {
+							...input,
+							headers: {
+								...(input.headers as Record<string, string>),
+								Authorization: `Bearer ${accessToken}`,
+							},
+						}
+					: input;
+				response = retry?.abortSession
+					? await fetchWithTimeout(url, sessionInput, timeoutMs)
+					: await fetch(url, sessionInput);
 			} else {
 				response = await fetchWithTimeout(url, input, timeoutMs);
 			}
@@ -383,8 +384,8 @@ export async function executeGraphQL<Result, Variables>(
 	const { variables, headers, cache, auth, maxRetries, timeoutMs, ledgerMode } = options;
 
 	// `Date.now()` during a page prerender makes the route blocking. Search and other
-	// live reads hit that clock here, and session auth hits it again inside
-	// `@saleor/auth-sdk`'s `fetchWithAuth`. `io()` moves this call into the dynamic
+	// live reads hit that clock here, and session auth hits it again when it checks the
+	// access token's expiry (`getSessionAccessToken`). `io()` moves this call into the dynamic
 	// stage first. Cached reads omit `cache: "no-cache"` and must not call `io()` —
 	// they run inside `"use cache"`.
 	if (cache === "no-cache") {
@@ -496,8 +497,8 @@ interface RawGraphQLOptions {
  *
  * @example
  * const result = await executeRawGraphQL({
- *   query: `mutation Register($input: AccountRegisterInput!) { ... }`,
- *   variables: { input: { email, password } },
+ *   query: `mutation CheckoutEmailUpdate($id: ID!, $email: String!) { ... }`,
+ *   variables: { id, email },
  * });
  *
  * if (!result.ok) {
@@ -505,9 +506,9 @@ interface RawGraphQLOptions {
  * }
  *
  * // Access mutation result
- * const { accountRegister } = result.data;
- * if (accountRegister.errors?.length) {
- *   return validationErrorResponse(accountRegister.errors);
+ * const { checkoutEmailUpdate } = result.data;
+ * if (checkoutEmailUpdate.errors?.length) {
+ *   return validationErrorResponse(checkoutEmailUpdate.errors);
  * }
  */
 export async function executeRawGraphQL<T = unknown>(options: RawGraphQLOptions): Promise<GraphQLResult<T>> {
@@ -553,9 +554,9 @@ export async function executeRawGraphQL<T = unknown>(options: RawGraphQLOptions)
  * Use after checking the mutation response for domain errors.
  *
  * @example
- * const { accountRegister } = result.data;
- * if (accountRegister.errors?.length) {
- *   return asValidationError(accountRegister.errors);
+ * const { checkoutEmailUpdate } = result.data;
+ * if (checkoutEmailUpdate.errors?.length) {
+ *   return asValidationError(checkoutEmailUpdate.errors);
  * }
  */
 export function asValidationError(

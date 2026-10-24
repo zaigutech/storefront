@@ -148,20 +148,15 @@
 		"metadata": {
 			"loginTitle": "로그인",
 			"loginDescription": "계정에 로그인하여 주문 내역과 저장된 주소를 확인하세요.",
-			"signupTitle": "계정 만들기",
-			"signupDescription": "새 계정을 만들어 주소와 주문 내역을 저장하세요.",
 			"accountTitle": "내 계정"
 		},
 		"fields": {
 			"email": "이메일",
 			"emailAddress": "이메일 주소",
-			"password": "비밀번호",
 			"firstName": "이름",
 			"lastName": "성",
 			"confirmPassword": "비밀번호 확인",
-			"currentPassword": "현재 비밀번호",
 			"newPassword": "새 비밀번호",
-			"confirmNewPassword": "새 비밀번호 확인",
 			"name": "이름",
 			"companyOptional": "회사명 (선택)",
 			"streetAddress": "도로명 주소",
@@ -185,105 +180,37 @@
 		},
 		"placeholders": {
 			"email": "you@example.com",
-			"password": "비밀번호를 입력하세요",
 			"firstName": "이름",
 			"lastName": "성",
-			"newPasswordMin": "8자 이상 입력…",
 			"confirmPassword": "비밀번호를 다시 입력하세요",
-			"reenterPassword": "비밀번호를 다시 입력하세요",
 			"countryCode": "KR"
 		},
 		"common": {
 			"cancel": "취소",
-			"save": "저장",
 			"saving": "저장 중…",
 			"edit": "수정",
 			"delete": "삭제",
-			"updated": "업데이트됨",
-			"showPassword": "비밀번호 표시",
-			"hidePassword": "비밀번호 숨기기",
 			"free": "무료",
 			"qty": "수량: {count}",
 			"itemCount": "{count, plural, other {상품 #개}}",
-			"notSet": "설정되지 않음",
-			"change": "변경",
-			"changing": "변경 중…",
-			"sending": "전송 중…"
+			"change": "변경"
 		},
 		"errors": {
 			"invalidEmail": "올바른 이메일 주소를 입력해주세요",
-			"invalidEmailFirst": "먼저 올바른 이메일 주소를 입력해주세요",
-			"passwordRequired": "비밀번호를 입력해주세요",
-			"passwordMinLength": "비밀번호는 8자 이상이어야 합니다",
-			"passwordsMismatch": "비밀번호가 일치하지 않습니다",
-			"newPasswordRequired": "새 비밀번호를 입력해주세요",
 			"generic": "오류가 발생했습니다. 다시 시도해주세요.",
-			"signInFailed": "로그인에 실패했습니다. 다시 시도해주세요.",
-			"invalidCredentials": "이메일 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요.",
-			"rateLimited": "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해주세요.",
-			"resetLinkFailed": "재설정 링크 전송에 실패했습니다",
-			"accountExists": "이미 이 이메일로 가입된 계정이 있습니다. 로그인해주세요.",
-			"createAccountFailed": "계정 생성에 실패했습니다",
-			"invalidResetToken": "비밀번호 재설정 링크가 만료되었습니다. 새 링크를 요청해주세요.",
-			"setPasswordFailed": "비밀번호 설정에 실패했습니다",
-			"invalidConfirmToken": "확인 링크가 만료되었거나 이미 사용되었습니다. 로그인하거나 다시 가입해주세요.",
-			"confirmFailed": "계정 확인에 실패했습니다",
 			"loadOrdersFailed": "주문 내역을 불러올 수 없습니다. 잠시 후 다시 시도해주세요.",
 			"loadOrderFailed": "이 주문을 불러올 수 없습니다. 다시 시도해주세요.",
 			"loadRecentOrdersFailed": "최근 주문 내역을 불러올 수 없습니다.",
-			"updateProfileFailed": "프로필 업데이트에 실패했습니다",
-			"changePasswordFailed": "비밀번호 변경에 실패했습니다",
 			"createAddressFailed": "주소 추가에 실패했습니다",
 			"updateAddressFailed": "주소 업데이트에 실패했습니다",
 			"deleteAddressFailed": "주소 삭제에 실패했습니다",
-			"setDefaultAddressFailed": "기본 주소 설정에 실패했습니다",
-			"deleteAccountFailed": "계정 삭제 요청에 실패했습니다"
+			"setDefaultAddressFailed": "기본 주소 설정에 실패했습니다"
 		},
 		"login": {
 			"title": "다시 오신 것을 환영합니다",
 			"noAccount": "계정이 없으신가요?",
 			"signUp": "회원가입",
-			"forgotPassword": "비밀번호를 잊으셨나요?",
-			"resendResetLink": "재설정 링크 다시 보내기",
-			"submit": "로그인",
-			"submitting": "로그인 중…",
-			"resetSent": "{email} 계정이 존재하는 경우 비밀번호 재설정 링크가 전송되었습니다. 참고: 재설정 링크는 15분에 한 번만 요청할 수 있습니다."
-		},
-		"signup": {
-			"title": "계정 만들기",
-			"hasAccount": "이미 계정이 있으신가요?",
-			"signIn": "로그인",
-			"submit": "계정 만들기",
-			"submitting": "계정 생성 중…",
-			"successTitle": "계정이 생성되었습니다!",
-			"successBody": "계정을 인증하려면 이메일을 확인해주세요.",
-			"goToSignIn": "로그인하러 가기",
-			"terms": "계정을 생성하면 당사의 <terms>서비스 약관</terms> 및 <privacy>개인정보 처리방침</privacy>에 동의하는 것으로 간주됩니다.",
-			"termsLink": "서비스 약관",
-			"privacyLink": "개인정보 처리방침"
-		},
-		"setPassword": {
-			"title": "새 비밀번호 설정",
-			"subtitle": "{email}의 새 비밀번호를 입력하세요",
-			"submit": "비밀번호 업데이트",
-			"submitting": "업데이트 중…",
-			"backToSignIn": "로그인으로 돌아가기",
-			"successTitle": "비밀번호가 업데이트되었습니다!",
-			"successBody": "비밀번호가 성공적으로 재설정되었습니다. 이제 로그인되었습니다.",
-			"redirecting": "스토어로 이동 중…"
-		},
-		"confirm": {
-			"successTitle": "계정이 확인되었습니다",
-			"successBody": "{email} 계정이 활성화되었습니다.",
-			"signIn": "로그인",
-			"continueShopping": "쇼핑 계속하기",
-			"errorTitle": "계정을 확인할 수 없습니다",
-			"goToSignIn": "로그인으로 이동",
-			"title": "계정 확인",
-			"body": "{email}의 비밀번호를 입력해 계정 확인을 완료하세요.",
-			"submit": "계정 확인",
-			"submitting": "확인 중…",
-			"tryAgain": "다시 시도"
+			"submit": "로그인"
 		},
 		"nav": {
 			"ariaLabel": "계정",
@@ -355,7 +282,9 @@
 		"settings": {
 			"title": "설정",
 			"subtitle": "계정 설정을 관리하세요",
-			"memberSince": "{date}부터 회원"
+			"memberSince": "{date}부터 회원",
+			"manageAccount": "계정 관리",
+			"manageAccountHint": "이름, 이메일, 비밀번호는 로그인 계정에서 변경할 수 있습니다."
 		},
 		"addresses": {
 			"title": "주소",
@@ -373,17 +302,6 @@
 			"defaultBilling": "기본 청구지",
 			"makeDefaultShipping": "기본 배송지로 설정",
 			"makeDefaultBilling": "기본 청구지로 설정"
-		},
-		"deleteAccount": {
-			"title": "계정 삭제",
-			"description": "계정과 관련된 모든 데이터를 영구적으로 삭제합니다.",
-			"submit": "계정 삭제",
-			"confirm": "예, 계정을 삭제합니다",
-			"confirmBody": "이 작업은 되돌릴 수 없습니다. 계정이 삭제되기 전에 확인 이메일을 받게 됩니다.",
-			"emailSent": "확인 이메일이 전송되었습니다. 계정 삭제를 완료하려면 받은편지함을 확인해주세요."
-		},
-		"changePassword": {
-			"submit": "비밀번호 변경"
 		},
 		"unavailable": {
 			"title": "계정을 불러올 수 없습니다",
@@ -437,7 +355,6 @@
 			"discountRemoveFailed": "할인 코드 삭제에 실패했습니다.",
 			"invalidValue": "잘못된 값입니다",
 			"updateEmailFailed": "이메일 업데이트에 실패했습니다",
-			"createAccountFailed": "계정 생성에 실패했습니다",
 			"updateAddressFailed": "주소 업데이트에 실패했습니다",
 			"itemUnavailableTitle": "An item isn’t available",
 			"itemUnavailableMessage": "This item can’t be fulfilled for the address you entered. Try a different destination.",
@@ -451,15 +368,6 @@
 		"contact": {
 			"title": "연락처",
 			"haveAccount": "계정이 있으신가요?",
-			"createAccountLabel": "다음 결제를 더 빠르게 진행하려면 계정을 만드세요",
-			"activationNotice": "결제 완료 후, 로그인하기 전에 계정을 활성화하는 이메일을 받게 됩니다.",
-			"guestCheckout": "비회원 결제",
-			"newCustomer": "처음 방문하셨나요?",
-			"signInTitle": "로그인",
-			"resetPasswordTitle": "비밀번호 재설정",
-			"resetPasswordSubtitle": "계정의 새 비밀번호를 입력하세요",
-			"processing": "처리 중…",
-			"passwordMinPlaceholder": "비밀번호 (최소 8자)",
 			"signedIn": "로그인됨"
 		},
 		"summary": {
@@ -588,8 +496,6 @@
 		},
 		"server": {
 			"marketingSaveFailed": "마케팅 수신 동의 저장에 실패했습니다",
-			"invalidRedirectUrl": "잘못된 리디렉션 URL입니다. 자세한 내용은 서버 로그를 확인하세요.",
-			"createAccountFailed": "계정 생성에 실패했습니다",
 			"noSaleorResponse": "Saleor로부터 응답이 없습니다",
 			"shippingMethodsFailed": "배송 방법을 불러오지 못했습니다",
 			"gatewayInitFailed": "결제 게이트웨이 초기화에 실패했습니다",

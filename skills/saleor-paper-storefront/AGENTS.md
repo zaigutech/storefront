@@ -702,16 +702,15 @@ Anything that calls `cookies()`, `headers()`, or authenticated GraphQL is **dyna
 
 ## BFF auth (session lifecycle)
 
-Login, logout, and password reset go through **Next.js API routes**, not the browser Saleor SDK. Tokens are **HttpOnly** cookies set server-side via `getServerAuthClient()`.
+Customers sign in, sign up and reset passwords on **Keycloak's pages**; the storefront never sees a password. The OIDC Authorization Code flow (PKCE, confidential client, `openid-client`) runs in **Next.js API routes**, and the Keycloak tokens are **HttpOnly** cookies. Saleor accepts the Keycloak access token through its OpenID Connect plugin, so `sessionQuery` / `mutate` send it as the bearer (setup: `docs/configuration/keycloak.md`).
 
-| Route                                            | Purpose                                     |
-| ------------------------------------------------ | ------------------------------------------- |
-| `POST /api/auth/login`                           | `tokenCreate` → Set-Cookie                  |
-| `POST /api/auth/register`                        | Account registration                        |
-| `POST /api/auth/reset-password` / `set-password` | Request reset email / reset token → session |
-| `logout()` server action                         | Clear cookies + detach checkout             |
+| Route                    | Purpose                                                                                       |
+| ------------------------ | --------------------------------------------------------------------------------------------- |
+| `GET /api/auth/login`    | Redirect to Keycloak (`?signup=1`: registration page), browse locale as `ui_locales`          |
+| `GET /api/auth/callback` | Redeem the code, register a first-time customer with EOS (`ensureEosClient`), set cookies     |
+| `logout()` server action | Detach checkout + clear cookies; returns Keycloak's end-session URL, which the client follows |
 
-Client forms call `loginWithBff()` / `setPasswordWithBff()` (`src/lib/auth/bff-client.ts`). Commerce (cart, checkout lines) stays on **server actions** — do not proxy all GraphQL. The header user menu (`UserMenuServer`) calls `getHeaderUser()` inside Suspense — same server session as account pages, no client `me` fetch.
+Link to sign-in with `signInHref(returnTo)` (plain anchor or `window.location.assign`); `returnTo` is a same-origin path (`safeReturnPath`). `getSessionAccessToken()` refreshes the access token near expiry; during an RSC render the refreshed token serves the request without being written back. Account name, email and password are edited in Keycloak's account console (`keycloakAccountConsoleUrl()`). Commerce (cart, checkout lines) stays on **server actions** — do not proxy all GraphQL. The header user menu (`UserMenuServer`) calls `getHeaderUser()` inside Suspense — same server session as account pages, no client `me` fetch.
 
 ## Keeping header chrome fresh (Router Cache)
 
@@ -721,13 +720,13 @@ HttpOnly cookies are the source of truth, and the header auth/cart chrome render
 | ----------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | Same-tab mutation             | Add-to-cart, cart line edits, profile edits | Server action calls `refresh()` (`next/cache`) — re-renders this user's route in the action response                                        |
 | Cross-tab                     | Login/logout/cart change in another tab     | Mutators call `bumpChromeVersion()`; `HeaderChromeSync` compares on `storage`/`visibilitychange`/`pageshow` and refreshes once when visible |
-| Cross-surface / auth boundary | Login, logout, checkout → storefront        | **Hard navigation** — a fresh document needs no invalidation                                                                                |
+| Cross-surface / auth boundary | Login, logout, checkout → storefront        | **Hard navigation** (the Keycloak round trip is one) — a fresh document needs no invalidation                                               |
 
 **Do NOT `router.refresh()` on in-store soft navigation.** The header lives in the shared layout (preserved across sibling navigations), and every session/cart mutation already refreshes this user's chrome via the action's `refresh()`. A per-pathname refresh forces a server round-trip on every soft nav and defeats instant navigation to prerendered shells — most visibly returning to the homepage, which has no loading skeleton to mask the wait.
 
 **Do NOT revalidate on first paint or tab focus.** The removed `HeaderAuthRefresh` design called a Server Action that `revalidatePath`-ed the entire locale/channel layout on every hard load and every refocus — a **sitewide shared-cache purge per visitor**, billed at traffic scale (invocations, ISR writes, defeated CDN). First paint is already cookie-correct; cross-tab staleness is what the version bump exists for.
 
-**Hard navigation is required** when leaving `/checkout` or after login/logout — soft `router.push`/`<Link>` can restore a cached anonymous `UserMenuServer`. Use `syncAuthSurfacesAfterSignIn({ redirectTo })`, `useLogout({ channel })`, `navigateToStorefrontHome()`, or `StorefrontHomeLink` (plain anchor).
+**Hard navigation is required** when leaving `/checkout` or after login/logout — soft `router.push`/`<Link>` can restore a cached anonymous `UserMenuServer`. Sign-in always is one (Keycloak redirects back); otherwise use `useLogout({ channel })`, `navigateToStorefrontHome()`, or `StorefrontHomeLink` (plain anchor).
 
 ## Account architecture
 
@@ -737,7 +736,7 @@ Browse layouts use per-chrome slots; account uses a **layout-shell auth gate** (
 account/layout.tsx
 └── Suspense fallback={<AccountSkeleton />}
     └── AccountShell (async)
-        ├── no session / invalid user → <AccountLogin />   (LoginForm → BFF)
+        ├── no session / invalid user → <AccountLogin />   (SignInPanel → Keycloak)
         └── user → AccountProvider
             ├── AccountNav (static client)
             └── {children}   (sync pages + nested Suspense islands)
@@ -773,7 +772,7 @@ export default function AccountOverviewPage() {
 ## Anti-patterns
 
 ❌ `cookies()` / `getCurrentUser()` in an async page without a page/layout Suspense boundary
-❌ Browser → Saleor for login or `me` — use BFF routes + server `getHeaderUser()`
+❌ Browser → Saleor or Keycloak for tokens or `me` — use the `/api/auth/*` routes + server `getHeaderUser()`
 ❌ `connection()` in the account layout — can break PPR with `CartProvider` in the parent tree
 ❌ Wrapping only `<main>` in Suspense as a workaround — use the layout shell that owns the fetch
 ❌ `key={pathname}` without `router.refresh()` on header auth — remounting RSC children doesn't bust the Router Cache
@@ -783,69 +782,43 @@ export default function AccountOverviewPage() {
 
 ## Key files
 
-| Concern                | File                                                                                                              | Note                                                            |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Cookie presence        | `src/lib/auth/has-auth-session.ts`                                                                                | Same lookup as auth SDK (`readAuthCookieValue`)                 |
-| User profile           | `account/get-current-user.ts`                                                                                     | `React.cache()` — deduped per request                           |
-| Header user            | `src/lib/auth/get-header-user.ts`                                                                                 | guest / authenticated / unavailable                             |
-| Session resolution     | `src/lib/auth/resolve-session-user.ts`                                                                            | Classifies the `me` fetch; one server retry on transient errors |
-| Auth failure codes     | `src/lib/auth/session-auth-state.ts`                                                                              | `isDefinitiveAuthFailure` — Saleor JWT codes + message fallback |
-| BFF sign-in            | `src/lib/auth/bff-server.ts`, `/api/auth/login/route.ts`                                                          | HttpOnly cookies, rate limited                                  |
-| Client forms / profile | `bff-client.ts`, `account-context.tsx`                                                                            | `loginWithBff`; `useAccountUser()`                              |
-| Sign-in UI             | `account-login.tsx`                                                                                               | `LoginForm` in Suspense (no SDK provider)                       |
-| Chrome refresh         | `user-menu-server.tsx`, `header-chrome-sync.tsx`, `src/lib/chrome-sync.ts`, `sync-auth-surfaces-after-sign-in.ts` | Header auth chrome + cross-tab sync + post-login hard nav       |
-| Layouts                | `(main)/layout.tsx`, `account/layout.tsx`, `account/actions.ts`                                                   | Browse chrome vs account auth gate; `refresh()` after mutations |
+| Concern            | File                                                                                      | Note                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Session / tokens   | `src/lib/auth/session.ts`, `has-auth-session.ts`                                          | Keycloak cookies; refresh near expiry                           |
+| User profile       | `account/get-current-user.ts`                                                             | `React.cache()` — deduped per request                           |
+| Header user        | `src/lib/auth/get-header-user.ts`                                                         | guest / authenticated / unavailable                             |
+| Session resolution | `src/lib/auth/resolve-session-user.ts`                                                    | Classifies the `me` fetch; one server retry on transient errors |
+| Auth failure codes | `src/lib/auth/session-auth-state.ts`                                                      | `isDefinitiveAuthFailure` — Saleor JWT codes + message fallback |
+| OIDC flow          | `src/lib/auth/keycloak.ts`, `sign-in-attempt.ts`, `/api/auth/login`, `/api/auth/callback` | Discovery, PKCE + state cookie, code exchange                   |
+| EOS registration   | `src/lib/auth/eos.ts`                                                                     | First sign-in joins the tenant as a client                      |
+| Profile            | `account-context.tsx`                                                                     | `useAccountUser()`                                              |
+| Sign-in UI         | `account-login.tsx`, `sign-in-panel.tsx`                                                  | Anchors to `signInHref()`                                       |
+| Chrome refresh     | `user-menu-server.tsx`, `header-chrome-sync.tsx`, `src/lib/chrome-sync.ts`                | Header auth chrome + cross-tab sync                             |
+| Layouts            | `(main)/layout.tsx`, `account/layout.tsx`, `account/actions.ts`                           | Browse chrome vs account auth gate; `refresh()` after mutations |
 
-Related: [`data-caching.md`](data-caching.md) (page-boundary model), [`checkout-management.md`](checkout-management.md) (checkout BFF sign-in + `router.refresh()`).
+Related: [`data-caching.md`](data-caching.md) (page-boundary model), [`checkout-management.md`](checkout-management.md) (checkout sign-in round trip), [`data-redirect-security.md`](data-redirect-security.md) (`returnTo`).
 
 ---
 
 ### 1.4 Redirect URL Security
 
-Redirect URLs are security-sensitive everywhere. Any code path that accepts, builds, validates, stores, forwards, or follows a redirect URL must treat the destination origin as attacker-controlled until it has passed the shared allowlist check.
+Where a customer lands after signing in or out is attacker-influenced input (`?returnTo=`). An open redirect there turns the storefront's trusted origin and Keycloak's login page into a phishing hop.
 
 ## Rule
 
-Production redirect allowlists must come from explicit configuration, not request metadata.
+- `returnTo` is a **path**, never a URL: pass it through `safeReturnPath()` (`src/lib/auth/return-path.ts`), which keeps only same-origin paths and falls back to `/`. Do not duplicate its checks elsewhere.
+- Absolute URLs the storefront hands to Keycloak (`redirect_uri`, `post_logout_redirect_uri`, the account console's `referrer_uri`) and the callback's own redirects are built with `storefrontUrl()` from `NEXT_PUBLIC_STOREFRONT_URL`, never from the request.
+- Keycloak checks `redirect_uri` and `post_logout_redirect_uri` against the client's registered redirect URIs; keep those to the storefront origin. That is the second guard, not the only one.
 
-The allowed origin sources are documented in `docs/configuration/allowed-origins.md`; do NOT copy that list into other code; always reuse `isAllowedRedirectUrl()` for redirect destination checks. Do not duplicate its parsing, normalization, environment handling, or development fallback logic in route handlers, Server Actions, components, or tests.
+## Never Trust These For Redirect Origins
 
-## Never Trust These For Production Allowlisting
-
-Do not allow these values to introduce a production redirect origin:
-
-- `Host`
-- `X-Forwarded-Host`
-- `X-Forwarded-Proto`
-- `Origin`
-- `Referer`
-- `request.nextUrl.origin`
-- `headers().get(...)`
-- helper output derived from request headers, including `getRequestOrigin()`
-
-## Saleor Boundary
-
-Saleor also validates these redirect URLs with [`ALLOWED_CLIENT_HOSTS`]. Keep storefront allowlists aligned with Saleor config, but do not rely on Saleor as the only guard. The storefront check should reject invalid redirect origins before forwarding the mutation.
-
-[`ALLOWED_CLIENT_HOSTS`]: https://docs.saleor.io/setup/configuration#allowed_client_hosts
+- `Host`, `X-Forwarded-Host`, `X-Forwarded-Proto`, `Origin`, `Referer`
+- `request.nextUrl.origin` (behind a proxy it is the internal URL, and it breaks the `redirect_uri` match)
+- `headers().get(...)` or any helper derived from request headers
 
 ## Required Tests
 
-When changing redirect validation, auth routes, or checkout auth actions, add or keep tests that prove:
-
-- A redirect URL matching only `request.nextUrl.origin` or `getRequestOrigin()` is rejected in production.
-- Spoofed `Host` or `X-Forwarded-*` derived origins do not become allowed production origins.
-- Configured storefront, checkout, and extra origins are accepted.
-- Loopback request origins are accepted only outside production.
-- Foreign origins, subdomain tricks, non-http schemes, protocol-relative URLs, and malformed URLs are rejected.
-
-## Anti-patterns
-
-- Do not use `allowed.push(request.nextUrl.origin)`
-- Do not use `allowed.push(await getRequestOrigin())`
-- Do not treat `Origin` as a redirect allowlist source.
-- Do not fix failing tests by broadening the allowlist to request headers.
-- Do not add preview or deployment hosts implicitly unless the helper already supports that exact env source.
+When changing `safeReturnPath()`, keep tests proving it accepts same-origin paths (with query) and rejects absolute URLs, protocol-relative `//host` and `/\host`, non-http schemes and empty input.
 
 ---
 
@@ -2122,26 +2095,25 @@ actions.ts (server)             ← mutations, payment transactions, checkoutCom
 
 ## Data and caching
 
-| Surface    | GraphQL                                                         | Freshness                      |
-| ---------- | --------------------------------------------------------------- | ------------------------------ |
-| Storefront | `cachedQuery` (catalog) / `sessionQuery` / `mutate`             | Display cached (`"use cache"`) |
-| Checkout   | RSC page + server actions (`liveQuery` / `mutate`)              | Always fresh (never cached)    |
-| Auth       | `POST /api/auth/*` + `getServerAuthClient()` (HttpOnly cookies) | Always fresh                   |
+| Surface    | GraphQL                                                          | Freshness                      |
+| ---------- | ---------------------------------------------------------------- | ------------------------------ |
+| Storefront | `cachedQuery` (catalog) / `sessionQuery` / `mutate`              | Display cached (`"use cache"`) |
+| Checkout   | RSC page + server actions (`liveQuery` / `mutate`)               | Always fresh (never cached)    |
+| Auth       | `GET /api/auth/*` + `getSessionAccessToken()` (HttpOnly cookies) | Always fresh                   |
 
 `CheckoutSessionLoader` passes `initialCheckout` when `loadState === "ready"`. Guest order status is a separate route (`order/[key]/page.tsx` + `OrderConfirmationApp` — no cart context). Client `syncCheckoutFromServer` is a narrow fallback; normal path is RSC hydrate + `adoptCheckoutSnapshot` on refresh.
 
 ## Session (shared BFF)
 
-Login, logout, and password reset use **Next.js API routes** — not browser Saleor SDK. Checkout and storefront share the same HttpOnly cookies.
+Sign-in, sign-up and password reset happen on **Keycloak's pages**; the storefront runs the OIDC code flow in **Next.js API routes** — never in the browser. Checkout and storefront share the same HttpOnly cookies.
 
-| Concern                    | Location                                                                          |
-| -------------------------- | --------------------------------------------------------------------------------- |
-| Sign-in                    | `POST /api/auth/login` via `loginWithBff()`                                       |
-| Classify `me` fetch        | `resolveSessionUser()` → `guest` / `authenticated` / `unavailable`                |
-| JWT expiry detection       | `session-auth-state.ts` — structured Saleor codes (`ExpiredSignatureError`, etc.) |
-| After sign-in in checkout  | `router.refresh()` or `useRefreshCheckoutRsc()`                                   |
-| After sign-in → storefront | `syncAuthSurfacesAfterSignIn()` — hard nav + `revalidateStorefrontChrome`         |
-| Cart/checkout cache bust   | `revalidateAuthSurfaces` after cart mutations                                     |
+| Concern                  | Location                                                                         |
+| ------------------------ | -------------------------------------------------------------------------------- |
+| Sign-in / sign-up        | `signInHref(returnTo)` → `GET /api/auth/login` → Keycloak → `/api/auth/callback` |
+| Access token for Saleor  | `getSessionAccessToken()` — refreshes near expiry                                |
+| Classify `me` fetch      | `resolveSessionUser()` → `guest` / `authenticated` / `unavailable`               |
+| Sign-out                 | `logout()` action → Keycloak end-session → back to the page                      |
+| Cart/checkout cache bust | `revalidateAuthSurfaces` after cart mutations                                    |
 
 See `data-auth-routes.md` for Router Cache pitfalls (stale header menu) and when hard navigation is required.
 
@@ -2385,7 +2357,7 @@ The checkout id (a base64 Saleor global id, e.g. `Checkout:a8c7…`) lives in **
 
 ## Auth + data loading (RSC + client sync)
 
-Sign-in uses the same BFF as storefront (`loginWithBff()` → `POST /api/auth/login`); `CheckoutUserProvider` hydrates `me` from the RSC page; after sign-in call `refetchUser()` → `router.refresh()`. Sign-out = `logout()` action + `detachCheckoutCustomer` when needed.
+Sign-in leaves the checkout for Keycloak and comes back to it (`signInHref(currentPathAndQuery)` → `GET /api/auth/login`); `CheckoutUserProvider` hydrates `me` from the RSC page of the returning hard navigation. Sign-out = `logout()` action + `detachCheckoutCustomer` when needed.
 
 1. **RSC page** (`checkout/page.tsx`) fetches the full checkout (`fetchCheckoutOnServer`), `me`, order, and channel countries; passes `initialCheckout` when `loadState === "ready"`.
 2. **Client** `CheckoutDataProvider` hydrates from `initialCheckout`. RSC updates **merge** via `adoptCheckoutSnapshot`; explicit `refreshCheckout()` **replaces** state. Cart mutations revalidate `/checkout` via `revalidateStorefrontChrome`; use `useRefreshCheckoutRsc()` after auth or address-book changes.
@@ -2808,19 +2780,15 @@ src/checkout/components/
 
 ```tsx
 import {
-	SignInForm, // Email + password + forgot password
 	SignedInUser, // Logged-in user display with sign out
-	ResetPasswordForm, // New password form (reset callback)
-	GuestContact, // Email input + create account checkbox
+	GuestContact, // Email input + "log in" link
 } from "@/checkout/components/contact";
 ```
 
-| Component           | Props                                                          | Use Case                     |
-| ------------------- | -------------------------------------------------------------- | ---------------------------- |
-| `SignInForm`        | `initialEmail?`, `channelSlug`, `onSuccess`, `onGuestCheckout` | BFF sign-in (`loginWithBff`) |
-| `SignedInUser`      | `user`, `onSignOut`                                            | Show logged-in user info     |
-| `ResetPasswordForm` | `onSuccess`, `onBackToSignIn`                                  | Password reset callback      |
-| `GuestContact`      | `email`, `onEmailChange`, `emailError?`, `onSignInClick`       | Guest email entry            |
+| Component      | Props                                                    | Use Case                                    |
+| -------------- | -------------------------------------------------------- | ------------------------------------------- |
+| `SignedInUser` | `user`, `onSignOut`                                      | Show logged-in user info                    |
+| `GuestContact` | `email`, `onEmailChange`, `emailError?`, `onSignInClick` | Guest email entry; sign-in goes to Keycloak |
 
 ## Address Components
 
@@ -2892,17 +2860,20 @@ Steps import and compose these components:
 
 ```tsx
 // In InformationStep.tsx
-import { SignInForm, SignedInUser, GuestContact } from "@/checkout/components/contact";
+import { SignedInUser, GuestContact } from "@/checkout/components/contact";
+import { signInHref } from "@/lib/auth";
 import { AddressSelector } from "@/checkout/components/shipping-address";
 
 // Orchestrate based on auth state
 {
 	authenticated ? (
 		<SignedInUser user={user} onSignOut={handleSignOut} />
-	) : contactSection === "signIn" ? (
-		<SignInForm onSuccess={handleSignInSuccess} />
 	) : (
-		<GuestContact email={email} onEmailChange={setEmail} />
+		<GuestContact
+			email={email}
+			onEmailChange={setEmail}
+			onSignInClick={() => window.location.assign(signInHref(location.pathname + location.search))}
+		/>
 	);
 }
 ```

@@ -57,13 +57,10 @@ const CORE_OPERATIONS = {
 	CheckoutDeleteLines: mutate(),
 	CheckoutLinesUpdate: mutate(),
 	CheckoutCustomerDetach: mutate(),
-	AccountUpdate: mutate(),
-	PasswordChange: mutate(),
 	AccountAddressCreate: mutate(),
 	AccountAddressUpdate: mutate(),
 	AccountAddressDelete: mutate(),
 	AccountSetDefaultAddress: mutate(),
-	AccountRequestDeletion: mutate(),
 
 	// Checkout surface (operation names are the GraphQL names, not the TS exports).
 	checkout: live(),
@@ -91,8 +88,6 @@ const CORE_OPERATIONS = {
 	paymentGatewaysInitialize: mutate(),
 	transactionInitialize: mutate(),
 	transactionProcess: mutate(),
-	userRegister: mutate("none"),
-	requestPasswordReset: mutate("none"),
 	userAddressDelete: mutate(),
 	userAddressUpdate: mutate(),
 	userAddressCreate: mutate(),

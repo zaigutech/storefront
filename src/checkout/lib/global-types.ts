@@ -22,17 +22,8 @@ export type ErrorCode =
 	| GenericErrorCode
 	| "quantityGreaterThanLimit"
 	| "insufficientStock"
-	| "invalidCredentials"
 	| "emailInvalid"
-	| PasswordErrorCode
 	| CheckoutFinalizeErrorCode;
-
-export type PasswordErrorCode =
-	| "passwordTooShort"
-	| "passwordTooSimilar"
-	| "passwordTooCommon"
-	| "passwordInvalid"
-	| "passwordAtLeastCharacters";
 
 export type CheckoutFinalizeErrorCode = "missingFields";
 

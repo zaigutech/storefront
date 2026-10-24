@@ -24,26 +24,6 @@ query user {
 	}
 }
 
-mutation userRegister($input: AccountRegisterInput!) {
-	accountRegister(input: $input) {
-		errors {
-			message
-			field
-			code
-		}
-	}
-}
-
-mutation requestPasswordReset($email: String!, $channel: String!, $redirectUrl: String!) {
-	requestPasswordReset(email: $email, channel: $channel, redirectUrl: $redirectUrl) {
-		errors {
-			message
-			field
-			code
-		}
-	}
-}
-
 mutation userAddressDelete($id: ID!) {
 	accountAddressDelete(id: $id) {
 		user {
