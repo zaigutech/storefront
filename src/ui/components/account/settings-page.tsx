@@ -2,14 +2,13 @@
 
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Mail, Calendar } from "lucide-react";
+import { Mail, Calendar, ExternalLink } from "lucide-react";
 import { resolveLocaleFromSlug } from "@/config/locale";
-import { EditNameForm } from "@/ui/components/account/edit-name-form";
-import { ChangePasswordForm } from "@/ui/components/account/change-password-form";
-import { DeleteAccountSection } from "@/ui/components/account/delete-account-section";
+import { buttonClassName } from "@/ui/components/ui/button";
 import { useAccountUser } from "@/ui/components/account/account-context";
 
-export function AccountSettingsPage() {
+/** Name, email and password belong to the Keycloak account; the console edits them. */
+export function AccountSettingsPage({ accountConsoleUrl }: { accountConsoleUrl: string }) {
 	const t = useTranslations("account.settings");
 	const tFields = useTranslations("account.fields");
 	const params = useParams<{ locale: string }>();
@@ -42,11 +41,14 @@ export function AccountSettingsPage() {
 				</div>
 
 				<div className="p-4 sm:p-6">
-					<EditNameForm firstName={user.firstName} lastName={user.lastName} />
-				</div>
-
-				<div className="p-4 sm:p-6">
-					<ChangePasswordForm />
+					<p className="text-sm text-muted-foreground">{t("manageAccountHint")}</p>
+					<a
+						href={accountConsoleUrl}
+						className={buttonClassName({ variant: "outline-solid", asLink: true, className: "mt-3 gap-2" })}
+					>
+						{t("manageAccount")}
+						<ExternalLink className="h-4 w-4" />
+					</a>
 				</div>
 
 				<div className="p-4 sm:p-6">
@@ -55,10 +57,6 @@ export function AccountSettingsPage() {
 						<span>{t("memberSince", { date: memberSince })}</span>
 					</div>
 				</div>
-			</div>
-
-			<div className="border-destructive/20 rounded-lg border p-4 sm:p-6">
-				<DeleteAccountSection />
 			</div>
 		</div>
 	);

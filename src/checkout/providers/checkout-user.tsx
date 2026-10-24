@@ -16,7 +16,7 @@ const CheckoutUserContext = createContext<CheckoutUserContextValue | null>(null)
 
 /**
  * Customer session hydrated from the RSC page (sessionQuery).
- * Sign-in uses syncAuthSurfacesAfterSignIn; sign-out uses logout() + `useRefreshCheckoutRsc()`.
+ * Sign-in and sign-out leave the checkout and come back to it, re-rendering the page.
  */
 export function CheckoutUserProvider({
 	initialUser,

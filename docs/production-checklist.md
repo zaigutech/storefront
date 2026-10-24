@@ -49,7 +49,7 @@ Advanced/dev: Configurator CLI still works — see [`config/saleor/README.md`](.
 
 ## 6. Origins and go-live
 
-- Allow your storefront origin(s) for redirects — [`docs/configuration/allowed-origins.md`](configuration/allowed-origins.md).
+- Register the storefront with Keycloak and point Saleor's OpenID Connect plugin at the realm — [`docs/configuration/keycloak.md`](configuration/keycloak.md).
 - Confirm a test order from Paper checkout lands in Dashboard Orders.
 
 ## Follow-ups (not blocking first deploy)

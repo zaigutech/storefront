@@ -157,20 +157,15 @@
 		"metadata": {
 			"loginTitle": "Kirjaudu sisään",
 			"loginDescription": "Kirjaudu tilillesi nähdäksesi tilauksesi ja tallennetut osoitteesi.",
-			"signupTitle": "Luo tili",
-			"signupDescription": "Luo tili tallentaaksesi osoitteesi ja tilaushistoriasi.",
 			"accountTitle": "Oma tili"
 		},
 		"fields": {
 			"email": "Sähköposti",
 			"emailAddress": "Sähköpostiosoite",
-			"password": "Salasana",
 			"firstName": "Etunimi",
 			"lastName": "Sukunimi",
 			"confirmPassword": "Vahvista salasana",
-			"currentPassword": "Nykyinen salasana",
 			"newPassword": "Uusi salasana",
-			"confirmNewPassword": "Vahvista uusi salasana",
 			"name": "Nimi",
 			"companyOptional": "Yritys (valinnainen)",
 			"streetAddress": "Katuosoite",
@@ -194,105 +189,37 @@
 		},
 		"placeholders": {
 			"email": "sinä@esimerkki.fi",
-			"password": "Syötä salasanasi",
 			"firstName": "Etunimi",
 			"lastName": "Sukunimi",
-			"newPasswordMin": "Vähintään 8 merkkiä…",
 			"confirmPassword": "Vahvista salasanasi",
-			"reenterPassword": "Syötä salasana uudelleen",
 			"countryCode": "FI"
 		},
 		"common": {
 			"cancel": "Peruuta",
-			"save": "Tallenna",
 			"saving": "Tallennetaan…",
 			"edit": "Muokkaa",
 			"delete": "Poista",
-			"updated": "Päivitetty",
-			"showPassword": "Näytä salasana",
-			"hidePassword": "Piilota salasana",
 			"free": "Ilmainen",
 			"qty": "Määrä: {count}",
 			"itemCount": "{count, plural, one {# tuote} other {# tuotetta}}",
-			"notSet": "Ei asetettu",
-			"change": "Vaihda",
-			"changing": "Vaihdetaan…",
-			"sending": "Lähetetään…"
+			"change": "Vaihda"
 		},
 		"errors": {
 			"invalidEmail": "Anna kelvollinen sähköpostiosoite",
-			"invalidEmailFirst": "Anna ensin kelvollinen sähköpostiosoite",
-			"passwordRequired": "Anna salasanasi",
-			"passwordMinLength": "Salasanan on oltava vähintään 8 merkkiä",
-			"passwordsMismatch": "Salasanat eivät täsmää",
-			"newPasswordRequired": "Anna uusi salasana",
 			"generic": "Tapahtui virhe. Yritä uudelleen.",
-			"signInFailed": "Kirjautuminen epäonnistui. Yritä uudelleen.",
-			"invalidCredentials": "Virheellinen sähköposti tai salasana. Yritä uudelleen.",
-			"rateLimited": "Liian monta kirjautumisyritystä. Odota hetki ja yritä uudelleen.",
-			"resetLinkFailed": "Nollauslinkin lähetys epäonnistui",
-			"accountExists": "Tällä sähköpostiosoitteella on jo tili. Kirjaudu sisään sen sijaan.",
-			"createAccountFailed": "Tilin luominen epäonnistui",
-			"invalidResetToken": "Tämä salasanan nollauslinkki on vanhentunut. Pyydä uusi linkki.",
-			"setPasswordFailed": "Salasanan asettaminen epäonnistui",
-			"invalidConfirmToken": "Tämä vahvistuslinkki on vanhentunut tai se on jo käytetty. Yritä kirjautua tai rekisteröidy uudelleen.",
-			"confirmFailed": "Tilin vahvistaminen epäonnistui",
 			"loadOrdersFailed": "Tilausten lataaminen epäonnistui. Yritä hetken kuluttua uudelleen.",
 			"loadOrderFailed": "Tämän tilauksen lataaminen epäonnistui. Yritä uudelleen.",
 			"loadRecentOrdersFailed": "Viimeisimpien tilausten lataaminen epäonnistui.",
-			"updateProfileFailed": "Profiilin päivittäminen epäonnistui",
-			"changePasswordFailed": "Salasanan vaihtaminen epäonnistui",
 			"createAddressFailed": "Osoitteen luominen epäonnistui",
 			"updateAddressFailed": "Osoitteen päivittäminen epäonnistui",
 			"deleteAddressFailed": "Osoitteen poistaminen epäonnistui",
-			"setDefaultAddressFailed": "Oletusosoitteen asettaminen epäonnistui",
-			"deleteAccountFailed": "Tilin poistopyynnön lähetys epäonnistui"
+			"setDefaultAddressFailed": "Oletusosoitteen asettaminen epäonnistui"
 		},
 		"login": {
 			"title": "Tervetuloa takaisin",
 			"noAccount": "Eikö sinulla ole tiliä?",
 			"signUp": "Rekisteröidy",
-			"forgotPassword": "Unohditko salasanan?",
-			"resendResetLink": "Lähetä linkki uudelleen",
-			"submit": "Kirjaudu sisään",
-			"submitting": "Kirjaudutaan…",
-			"resetSent": "Jos tilille {email} on olemassa, salasanan nollauslinkki on lähetetty. Huom: voit pyytää nollauslinkin vain kerran 15 minuutissa."
-		},
-		"signup": {
-			"title": "Luo tili",
-			"hasAccount": "Onko sinulla jo tili?",
-			"signIn": "Kirjaudu sisään",
-			"submit": "Luo tili",
-			"submitting": "Luodaan tiliä…",
-			"successTitle": "Tili luotu!",
-			"successBody": "Tarkista sähköpostisi vahvistaaksesi tilisi.",
-			"goToSignIn": "Siirry kirjautumiseen",
-			"terms": "Luomalla tilin hyväksyt <terms>käyttöehdot</terms> ja <privacy>tietosuojakäytännön</privacy>.",
-			"termsLink": "Käyttöehdot",
-			"privacyLink": "Tietosuojakäytäntö"
-		},
-		"setPassword": {
-			"title": "Aseta uusi salasana",
-			"subtitle": "Anna uusi salasana osoitteelle {email}",
-			"submit": "Päivitä salasana",
-			"submitting": "Päivitetään…",
-			"backToSignIn": "Takaisin kirjautumiseen",
-			"successTitle": "Salasana päivitetty!",
-			"successBody": "Salasanasi on nollattu onnistuneesti. Olet nyt kirjautunut sisään.",
-			"redirecting": "Ohjataan kauppaan…"
-		},
-		"confirm": {
-			"successTitle": "Tili vahvistettu",
-			"successBody": "Tilisi osoitteelle {email} on aktiivinen.",
-			"signIn": "Kirjaudu sisään",
-			"continueShopping": "Jatka ostoksia",
-			"errorTitle": "Tiliä ei voitu vahvistaa",
-			"goToSignIn": "Siirry kirjautumiseen",
-			"title": "Vahvista tilisi",
-			"body": "Viimeistele tilisi vahvistus antamalla salasanasi osoitteelle {email}.",
-			"submit": "Vahvista tili",
-			"submitting": "Vahvistetaan…",
-			"tryAgain": "Yritä uudelleen"
+			"submit": "Kirjaudu sisään"
 		},
 		"nav": {
 			"ariaLabel": "Tili",
@@ -364,7 +291,9 @@
 		"settings": {
 			"title": "Asetukset",
 			"subtitle": "Hallitse tilisi asetuksia",
-			"memberSince": "Jäsen {date} lähtien"
+			"memberSince": "Jäsen {date} lähtien",
+			"manageAccount": "Hallinnoi tiliä",
+			"manageAccountHint": "Muuta nimeäsi, sähköpostiosoitettasi tai salasanaasi kirjautumistililläsi."
 		},
 		"addresses": {
 			"title": "Osoitteet",
@@ -382,17 +311,6 @@
 			"defaultBilling": "Oletuslaskutusosoite",
 			"makeDefaultShipping": "Aseta oletustoimitusosoitteeksi",
 			"makeDefaultBilling": "Aseta oletuslaskutusosoitteeksi"
-		},
-		"deleteAccount": {
-			"title": "Poista tili",
-			"description": "Poista tilisi ja kaikki siihen liittyvät tiedot pysyvästi.",
-			"submit": "Poista tili",
-			"confirm": "Kyllä, poista tilini",
-			"confirmBody": "Tätä toimintoa ei voi perua. Saat vahvistussähköpostin ennen tilisi poistamista.",
-			"emailSent": "Vahvistussähköposti on lähetetty. Tarkista postilaatikkosi viimeistelläksesi tilin poiston."
-		},
-		"changePassword": {
-			"submit": "Vaihda salasana"
 		},
 		"unavailable": {
 			"title": "Tiliä ei voitu ladata",
@@ -446,7 +364,6 @@
 			"discountRemoveFailed": "Alennuskoodin poisto epäonnistui.",
 			"invalidValue": "Virheellinen arvo",
 			"updateEmailFailed": "Sähköpostin päivitys epäonnistui",
-			"createAccountFailed": "Tilin luonti epäonnistui",
 			"updateAddressFailed": "Osoitteen päivitys epäonnistui",
 			"crashTitle": "Kassavirhe",
 			"crashMessage": "Kassan lataamisessa tapahtui virhe. Yritä uudelleen.",
@@ -460,15 +377,6 @@
 		"contact": {
 			"title": "Yhteystiedot",
 			"haveAccount": "Onko sinulla tili?",
-			"createAccountLabel": "Luo tili nopeampaa kassaa varten seuraavalla kerralla",
-			"activationNotice": "Kassan jälkeen saat sähköpostin tilisi aktivoimiseksi ennen kuin voit kirjautua sisään.",
-			"guestCheckout": "Vieraskassa",
-			"newCustomer": "Uusi asiakas?",
-			"signInTitle": "Kirjaudu",
-			"resetPasswordTitle": "Nollaa salasanasi",
-			"resetPasswordSubtitle": "Anna uusi salasana tilillesi",
-			"processing": "Käsitellään…",
-			"passwordMinPlaceholder": "Salasana (vähintään 8 merkkiä)",
 			"signedIn": "Kirjautuneena"
 		},
 		"summary": {
@@ -600,8 +508,6 @@
 		},
 		"server": {
 			"marketingSaveFailed": "Markkinointiasetuksen tallennus epäonnistui",
-			"invalidRedirectUrl": "Virheellinen uudelleenohjauksen URL. Katso lisätietoja palvelimen lokitiedoista.",
-			"createAccountFailed": "Tilin luonti epäonnistui",
 			"noSaleorResponse": "Ei vastausta Saleorilta",
 			"shippingMethodsFailed": "Toimitustapojen lataus epäonnistui",
 			"gatewayInitFailed": "Maksuyhdyskäytävän alustus epäonnistui",

@@ -157,20 +157,15 @@
 		"metadata": {
 			"loginTitle": "Sign In",
 			"loginDescription": "Sign in to your account to access your orders and saved addresses.",
-			"signupTitle": "Create Account",
-			"signupDescription": "Create a new account to save your addresses and order history.",
 			"accountTitle": "My Account"
 		},
 		"fields": {
 			"email": "Email",
 			"emailAddress": "Email address",
-			"password": "Password",
 			"firstName": "First name",
 			"lastName": "Last name",
 			"confirmPassword": "Confirm password",
-			"currentPassword": "Current password",
 			"newPassword": "New password",
-			"confirmNewPassword": "Confirm new password",
 			"name": "Name",
 			"companyOptional": "Company (optional)",
 			"streetAddress": "Street address",
@@ -194,105 +189,37 @@
 		},
 		"placeholders": {
 			"email": "you@example.com",
-			"password": "Enter your password",
 			"firstName": "First name",
 			"lastName": "Last name",
-			"newPasswordMin": "At least 8 characters…",
 			"confirmPassword": "Confirm your password",
-			"reenterPassword": "Re-enter your password",
 			"countryCode": "US"
 		},
 		"common": {
 			"cancel": "Cancel",
-			"save": "Save",
 			"saving": "Saving…",
 			"edit": "Edit",
 			"delete": "Delete",
-			"updated": "Updated",
-			"showPassword": "Show password",
-			"hidePassword": "Hide password",
 			"free": "Free",
 			"qty": "Qty: {count}",
 			"itemCount": "{count, plural, one {# item} other {# items}}",
-			"notSet": "Not set",
-			"change": "Change",
-			"changing": "Changing…",
-			"sending": "Sending…"
+			"change": "Change"
 		},
 		"errors": {
 			"invalidEmail": "Please enter a valid email address",
-			"invalidEmailFirst": "Please enter a valid email address first",
-			"passwordRequired": "Please enter your password",
-			"passwordMinLength": "Password must be at least 8 characters",
-			"passwordsMismatch": "Passwords do not match",
-			"newPasswordRequired": "Please enter a new password",
 			"generic": "An error occurred. Please try again.",
-			"signInFailed": "Sign in failed. Please try again.",
-			"invalidCredentials": "Invalid email or password. Please try again.",
-			"rateLimited": "Too many sign-in attempts. Please wait and try again.",
-			"resetLinkFailed": "Failed to send reset link",
-			"accountExists": "An account with this email already exists. Please sign in instead.",
-			"createAccountFailed": "Failed to create account",
-			"invalidResetToken": "This password reset link has expired. Please request a new one.",
-			"setPasswordFailed": "Failed to set password",
-			"invalidConfirmToken": "This confirmation link has expired or was already used. Try signing in or register again.",
-			"confirmFailed": "Failed to confirm account",
 			"loadOrdersFailed": "We couldn't load your orders. Please try again in a moment.",
 			"loadOrderFailed": "We couldn't load this order. Please try again.",
 			"loadRecentOrdersFailed": "We couldn't load your recent orders.",
-			"updateProfileFailed": "Failed to update profile",
-			"changePasswordFailed": "Failed to change password",
 			"createAddressFailed": "Failed to create address",
 			"updateAddressFailed": "Failed to update address",
 			"deleteAddressFailed": "Failed to delete address",
-			"setDefaultAddressFailed": "Failed to set default address",
-			"deleteAccountFailed": "Failed to request account deletion"
+			"setDefaultAddressFailed": "Failed to set default address"
 		},
 		"login": {
 			"title": "Welcome Back",
 			"noAccount": "Don't have an account?",
 			"signUp": "Sign up",
-			"forgotPassword": "Forgot password?",
-			"resendResetLink": "Resend reset link",
-			"submit": "Sign In",
-			"submitting": "Signing in…",
-			"resetSent": "If an account exists for {email}, a password reset link has been sent. Note: You can only request one reset link every 15 minutes."
-		},
-		"signup": {
-			"title": "Create an Account",
-			"hasAccount": "Already have an account?",
-			"signIn": "Sign in",
-			"submit": "Create Account",
-			"submitting": "Creating account…",
-			"successTitle": "Account Created!",
-			"successBody": "Please check your email to verify your account.",
-			"goToSignIn": "Go to Sign In",
-			"terms": "By creating an account, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
-			"termsLink": "Terms of Service",
-			"privacyLink": "Privacy Policy"
-		},
-		"setPassword": {
-			"title": "Set New Password",
-			"subtitle": "Enter a new password for {email}",
-			"submit": "Update Password",
-			"submitting": "Updating…",
-			"backToSignIn": "Back to Sign In",
-			"successTitle": "Password Updated!",
-			"successBody": "Your password has been successfully reset. You are now signed in.",
-			"redirecting": "Redirecting you to the store…"
-		},
-		"confirm": {
-			"successTitle": "Account confirmed",
-			"successBody": "Your account for {email} is active.",
-			"signIn": "Sign in",
-			"continueShopping": "Continue shopping",
-			"errorTitle": "Couldn't confirm account",
-			"goToSignIn": "Go to sign in",
-			"title": "Confirm your account",
-			"body": "Enter the password for {email} to finish confirming your account.",
-			"submit": "Confirm account",
-			"submitting": "Confirming…",
-			"tryAgain": "Try again"
+			"submit": "Sign In"
 		},
 		"nav": {
 			"ariaLabel": "Account",
@@ -364,7 +291,9 @@
 		"settings": {
 			"title": "Settings",
 			"subtitle": "Manage your account settings",
-			"memberSince": "Member since {date}"
+			"memberSince": "Member since {date}",
+			"manageAccount": "Manage account",
+			"manageAccountHint": "Change your name, email or password in your sign-in account."
 		},
 		"addresses": {
 			"title": "Addresses",
@@ -382,17 +311,6 @@
 			"defaultBilling": "Default billing",
 			"makeDefaultShipping": "Make default shipping",
 			"makeDefaultBilling": "Make default billing"
-		},
-		"deleteAccount": {
-			"title": "Delete account",
-			"description": "Permanently remove your account and all associated data.",
-			"submit": "Delete account",
-			"confirm": "Yes, delete my account",
-			"confirmBody": "This action cannot be undone. You will receive a confirmation email before your account is deleted.",
-			"emailSent": "A confirmation email has been sent. Please check your inbox to complete account deletion."
-		},
-		"changePassword": {
-			"submit": "Change password"
 		},
 		"unavailable": {
 			"title": "Unable to load your account",
@@ -446,7 +364,6 @@
 			"discountRemoveFailed": "Failed to remove discount code.",
 			"invalidValue": "Invalid value",
 			"updateEmailFailed": "Failed to update email",
-			"createAccountFailed": "Failed to create account",
 			"updateAddressFailed": "Failed to update address",
 			"itemUnavailableTitle": "An item isn’t available",
 			"itemUnavailableMessage": "This item can’t be fulfilled for the address you entered. Try a different destination.",
@@ -460,15 +377,6 @@
 		"contact": {
 			"title": "Contact",
 			"haveAccount": "Have an account?",
-			"createAccountLabel": "Create an account for faster checkout next time",
-			"activationNotice": "After checkout, you'll receive an email to activate your account before you can sign in.",
-			"guestCheckout": "Guest checkout",
-			"newCustomer": "New customer?",
-			"signInTitle": "Sign in",
-			"resetPasswordTitle": "Reset your password",
-			"resetPasswordSubtitle": "Enter a new password for your account",
-			"processing": "Processing…",
-			"passwordMinPlaceholder": "Password (minimum 8 characters)",
 			"signedIn": "Signed in"
 		},
 		"summary": {
@@ -599,8 +507,6 @@
 		},
 		"server": {
 			"marketingSaveFailed": "Failed to save marketing preference",
-			"invalidRedirectUrl": "Invalid redirect URL. See server logs for more information.",
-			"createAccountFailed": "Failed to create account",
 			"noSaleorResponse": "No response from Saleor",
 			"shippingMethodsFailed": "Failed to load shipping methods",
 			"gatewayInitFailed": "Payment gateway initialization failed",

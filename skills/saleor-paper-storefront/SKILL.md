@@ -96,7 +96,7 @@ Reference these guidelines when:
 - `checkout-design-principles` - Evidence-based UX principles (guest-first, mobile, pricing, express pay)
 - `checkout-management` - Lifecycle, RSC sync, shallow steps, payment transition UX (+ cheat sheet)
 - `checkout-payment-gateways` - Payment app registry, submit modes, Stripe Express Checkout wallets, adding a new gateway
-- `checkout-components` - Reusable checkout UI (SignInForm, AddressSelector, billing, integrated payment UI)
+- `checkout-components` - Reusable checkout UI (GuestContact, AddressSelector, billing, integrated payment UI)
 - `checkout-guest-order` - Guest `/order/{key}`: HMAC, redacted email landing, live Saleor refetch, Customer Emails `/order/{{id}}`
 
 ### 4. Design & Composition (HIGH)

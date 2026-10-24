@@ -63,26 +63,25 @@ actions.ts (server)             ← mutations, payment transactions, checkoutCom
 
 ## Data and caching
 
-| Surface    | GraphQL                                                         | Freshness                      |
-| ---------- | --------------------------------------------------------------- | ------------------------------ |
-| Storefront | `cachedQuery` (catalog) / `sessionQuery` / `mutate`             | Display cached (`"use cache"`) |
-| Checkout   | RSC page + server actions (`liveQuery` / `mutate`)              | Always fresh (never cached)    |
-| Auth       | `POST /api/auth/*` + `getServerAuthClient()` (HttpOnly cookies) | Always fresh                   |
+| Surface    | GraphQL                                                          | Freshness                      |
+| ---------- | ---------------------------------------------------------------- | ------------------------------ |
+| Storefront | `cachedQuery` (catalog) / `sessionQuery` / `mutate`              | Display cached (`"use cache"`) |
+| Checkout   | RSC page + server actions (`liveQuery` / `mutate`)               | Always fresh (never cached)    |
+| Auth       | `GET /api/auth/*` + `getSessionAccessToken()` (HttpOnly cookies) | Always fresh                   |
 
 `CheckoutSessionLoader` passes `initialCheckout` when `loadState === "ready"`. Guest order status is a separate route (`order/[key]/page.tsx` + `OrderConfirmationApp` — no cart context). Client `syncCheckoutFromServer` is a narrow fallback; normal path is RSC hydrate + `adoptCheckoutSnapshot` on refresh.
 
 ## Session (shared BFF)
 
-Login, logout, and password reset use **Next.js API routes** — not browser Saleor SDK. Checkout and storefront share the same HttpOnly cookies.
+Sign-in, sign-up and password reset happen on **Keycloak's pages**; the storefront runs the OIDC code flow in **Next.js API routes** — never in the browser. Checkout and storefront share the same HttpOnly cookies.
 
-| Concern                    | Location                                                                          |
-| -------------------------- | --------------------------------------------------------------------------------- |
-| Sign-in                    | `POST /api/auth/login` via `loginWithBff()`                                       |
-| Classify `me` fetch        | `resolveSessionUser()` → `guest` / `authenticated` / `unavailable`                |
-| JWT expiry detection       | `session-auth-state.ts` — structured Saleor codes (`ExpiredSignatureError`, etc.) |
-| After sign-in in checkout  | `router.refresh()` or `useRefreshCheckoutRsc()`                                   |
-| After sign-in → storefront | `syncAuthSurfacesAfterSignIn()` — hard nav + `revalidateStorefrontChrome`         |
-| Cart/checkout cache bust   | `revalidateAuthSurfaces` after cart mutations                                     |
+| Concern                  | Location                                                                         |
+| ------------------------ | -------------------------------------------------------------------------------- |
+| Sign-in / sign-up        | `signInHref(returnTo)` → `GET /api/auth/login` → Keycloak → `/api/auth/callback` |
+| Access token for Saleor  | `getSessionAccessToken()` — refreshes near expiry                                |
+| Classify `me` fetch      | `resolveSessionUser()` → `guest` / `authenticated` / `unavailable`               |
+| Sign-out                 | `logout()` action → Keycloak end-session → back to the page                      |
+| Cart/checkout cache bust | `revalidateAuthSurfaces` after cart mutations                                    |
 
 See `data-auth-routes.md` for Router Cache pitfalls (stale header menu) and when hard navigation is required.
 

@@ -1,43 +1,40 @@
-import { NextRequest, NextResponse } from "next/server";
-import { httpStatusForAuthErrors } from "@/lib/auth/auth-api-utils";
-import { rejectIfRateLimited } from "@/lib/auth/auth-rate-limit";
-import { signInWithPassword } from "@/lib/auth/bff-server";
+import { cookies } from "next/headers";
+import { type NextRequest, NextResponse } from "next/server";
+import * as oidc from "openid-client";
 
-interface LoginRequest {
-	email: string;
-	password: string;
-}
+import {
+	getKeycloakConfiguration,
+	KEYCLOAK_CALLBACK_PATH,
+	keycloakUiLocale,
+	storefrontUrl,
+} from "@/lib/auth/keycloak";
+import { safeReturnPath } from "@/lib/auth/return-path";
+import { saveSignInAttempt } from "@/lib/auth/sign-in-attempt";
+import { BROWSE_LOCALE_COOKIE } from "@/lib/browse-locale";
 
-export async function POST(request: NextRequest) {
-	const rateLimited = rejectIfRateLimited(request, "login");
-	if (rateLimited) {
-		return rateLimited;
-	}
+/**
+ * Sends the customer to Keycloak's sign-in page (`?signup=1`: its registration page), in the
+ * browse locale; `/api/auth/callback` finishes the flow and lands on `returnTo`.
+ */
+export async function GET(request: NextRequest) {
+	const params = request.nextUrl.searchParams;
+	const codeVerifier = oidc.randomPKCECodeVerifier();
+	const state = oidc.randomState();
 
-	let body: LoginRequest;
-	try {
-		body = (await request.json()) as LoginRequest;
-	} catch {
-		return NextResponse.json(
-			{ errors: [{ message: "Invalid request body", code: "INVALID_JSON" }] },
-			{ status: 400 },
-		);
-	}
+	const authorizationUrl = oidc.buildAuthorizationUrl(await getKeycloakConfiguration(), {
+		redirect_uri: storefrontUrl(KEYCLOAK_CALLBACK_PATH).href,
+		scope: "openid email profile",
+		code_challenge: await oidc.calculatePKCECodeChallenge(codeVerifier),
+		code_challenge_method: "S256",
+		state,
+		ui_locales: keycloakUiLocale(request.cookies.get(BROWSE_LOCALE_COOKIE)?.value),
+		...(params.has("signup") ? { prompt: "create" } : {}),
+	});
 
-	const { email, password } = body;
-
-	if (!email || !password) {
-		return NextResponse.json(
-			{ errors: [{ message: "Email and password are required", code: "REQUIRED" }] },
-			{ status: 400 },
-		);
-	}
-
-	const result = await signInWithPassword(email, password);
-
-	if (!result.ok) {
-		return NextResponse.json({ errors: result.errors }, { status: httpStatusForAuthErrors(result.errors) });
-	}
-
-	return NextResponse.json({ ok: true });
+	saveSignInAttempt(await cookies(), {
+		state,
+		codeVerifier,
+		returnTo: safeReturnPath(params.get("returnTo")),
+	});
+	return NextResponse.redirect(authorizationUrl);
 }

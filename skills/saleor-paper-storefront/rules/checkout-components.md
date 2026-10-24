@@ -23,19 +23,15 @@ src/checkout/components/
 
 ```tsx
 import {
-	SignInForm, // Email + password + forgot password
 	SignedInUser, // Logged-in user display with sign out
-	ResetPasswordForm, // New password form (reset callback)
-	GuestContact, // Email input + create account checkbox
+	GuestContact, // Email input + "log in" link
 } from "@/checkout/components/contact";
 ```
 
-| Component           | Props                                                          | Use Case                     |
-| ------------------- | -------------------------------------------------------------- | ---------------------------- |
-| `SignInForm`        | `initialEmail?`, `channelSlug`, `onSuccess`, `onGuestCheckout` | BFF sign-in (`loginWithBff`) |
-| `SignedInUser`      | `user`, `onSignOut`                                            | Show logged-in user info     |
-| `ResetPasswordForm` | `onSuccess`, `onBackToSignIn`                                  | Password reset callback      |
-| `GuestContact`      | `email`, `onEmailChange`, `emailError?`, `onSignInClick`       | Guest email entry            |
+| Component      | Props                                                    | Use Case                                    |
+| -------------- | -------------------------------------------------------- | ------------------------------------------- |
+| `SignedInUser` | `user`, `onSignOut`                                      | Show logged-in user info                    |
+| `GuestContact` | `email`, `onEmailChange`, `emailError?`, `onSignInClick` | Guest email entry; sign-in goes to Keycloak |
 
 ## Address Components
 
@@ -107,17 +103,20 @@ Steps import and compose these components:
 
 ```tsx
 // In InformationStep.tsx
-import { SignInForm, SignedInUser, GuestContact } from "@/checkout/components/contact";
+import { SignedInUser, GuestContact } from "@/checkout/components/contact";
+import { signInHref } from "@/lib/auth";
 import { AddressSelector } from "@/checkout/components/shipping-address";
 
 // Orchestrate based on auth state
 {
 	authenticated ? (
 		<SignedInUser user={user} onSignOut={handleSignOut} />
-	) : contactSection === "signIn" ? (
-		<SignInForm onSuccess={handleSignInSuccess} />
 	) : (
-		<GuestContact email={email} onEmailChange={setEmail} />
+		<GuestContact
+			email={email}
+			onEmailChange={setEmail}
+			onSignInClick={() => window.location.assign(signInHref(location.pathname + location.search))}
+		/>
 	);
 }
 ```

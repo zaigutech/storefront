@@ -2,15 +2,10 @@ import type { useTranslations } from "next-intl";
 
 /** Keys under `account.errors` returned by account server actions for client-side translation. */
 export type AccountActionErrorKey =
-	| "passwordMinLength"
-	| "passwordsMismatch"
-	| "updateProfileFailed"
-	| "changePasswordFailed"
 	| "createAddressFailed"
 	| "updateAddressFailed"
 	| "deleteAddressFailed"
-	| "setDefaultAddressFailed"
-	| "deleteAccountFailed";
+	| "setDefaultAddressFailed";
 
 export type AccountActionResult =
 	| { success: true }

@@ -117,7 +117,7 @@ Whether you're pair-programming with Cursor, Claude, or Copilot—the codebase i
 | **Caching**                | Cache Components (PPR), named cacheLife tiers, per-locale catalog cache, webhooks                                              |
 | **Saleor Cloud Paper app** | Saleor Cloud only — Dashboard extension for cache invalidation webhooks and _Preview in storefront_                            |
 | **Customer Profile**       | Account dashboard, address book, order history, password change, account deletion                                              |
-| **Authentication**         | Login, register, password reset, guest checkout                                                                                |
+| **Authentication**         | Keycloak sign-in and sign-up (server-side OIDC, HttpOnly cookies), guest checkout                                              |
 | **API Resilience**         | Automatic retries, rate limiting, timeouts—handles flaky connections gracefully                                                |
 
 ---
@@ -406,14 +406,18 @@ Symlinks the project skill into `.agents/skills/`, then runs `npx skills experim
 # Required
 NEXT_PUBLIC_SALEOR_API_URL=https://your-instance.saleor.cloud/graphql/
 NEXT_PUBLIC_DEFAULT_CHANNEL=default-channel          # Fallback channel; root "/" redirects here
+NEXT_PUBLIC_STOREFRONT_URL=https://shop.example.com  # Public origin: canonical URLs, OG images, Keycloak redirect URIs
+KEYCLOAK_ISSUER=https://auth.example.com/realms/eos  # Customer sign-in — see ./docs/configuration/keycloak.md
+KEYCLOAK_CLIENT_ID=eos-storefront
+KEYCLOAK_CLIENT_SECRET=
+EOS_API_URL=https://api.example.com/api              # First sign-in registers the customer with EOS
+EOS_TENANT_ID=
 
 # Multi-channel (recommended)
 STOREFRONT_CHANNELS=us,uk,eu                         # Comma-separated allowlist — routes, revalidation, footer
 
 # Optional
-NEXT_PUBLIC_STOREFRONT_URL=http://localhost:3000/    # Canonical URLs, OG images, and redirect allowlist
-NEXT_PUBLIC_CHECKOUT_URL=                            # Optional checkout origin and redirect allowlist
-ALLOWED_EXTRA_ORIGINS=                               # Optional extra redirect origins - see ./docs/configuration/allowed-origins.md
+NEXT_PUBLIC_CHECKOUT_URL=                            # Optional checkout origin
 NEXT_PUBLIC_DEFAULT_LOCALE=en                        # Default URL locale slug
 NEXT_PUBLIC_STOREFRONT_LOCALES=en,pl,de,fr,fi,nb,ja,ko  # Enabled locale slugs
 REVALIDATE_SECRET=                                   # Manual cache invalidation (GET /api/revalidate)

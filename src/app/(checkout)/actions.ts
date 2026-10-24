@@ -16,7 +16,6 @@ import {
 	CheckoutRemovePromoCodeDocument,
 	CheckoutShippingAddressUpdateDocument,
 	DeliveryOptionsCalculateDocument,
-	RequestPasswordResetDocument,
 	PaymentGatewaysInitializeDocument,
 	TransactionInitializeDocument,
 	TransactionProcessDocument,
@@ -49,8 +48,6 @@ import {
 	type CheckoutShippingAddressUpdateMutationVariables,
 	type DeliveryOptionsCalculateMutation,
 	type DeliveryOptionsCalculateMutationVariables,
-	type RequestPasswordResetMutation,
-	type RequestPasswordResetMutationVariables,
 	type PaymentGatewaysInitializeMutation,
 	type PaymentGatewaysInitializeMutationVariables,
 	type TransactionInitializeMutation,
@@ -67,7 +64,6 @@ import type {
 	AddressValidationRulesActionResult,
 	CheckoutActionResult,
 	CheckoutCompleteActionResult,
-	CheckoutFieldError,
 	DeliveryOptionsActionResult,
 	PaymentGatewaysInitializeActionResult,
 	SimpleActionResult,
@@ -91,8 +87,7 @@ import { checkoutGraphqlLanguageCode, resolveCheckoutLocaleSlug } from "@/lib/ch
 import { emitCommerceEvent } from "@/lib/analytics/emit.server";
 import { checkoutCreateContextMetadata } from "@/lib/commerce-context/checkout-create-context";
 import { graphqlLanguageCodeVariables } from "@/lib/graphql-locale";
-import { isAllowedRedirectUrl } from "@/lib/auth/validate-redirect-url";
-import { liveQuery, mutate, rawMutation } from "@/lib/saleor";
+import { liveQuery, mutate } from "@/lib/saleor";
 import * as Checkout from "@/lib/checkout";
 import { saveCheckoutId } from "@/app/actions";
 import { setOrderViewCookie, signOrderViewToken } from "@/lib/order-view";
@@ -178,11 +173,6 @@ const checkoutRemovePromoCodeDocument = toTypedDocument<
 	CheckoutRemovePromoCodeMutation,
 	CheckoutRemovePromoCodeMutationVariables
 >(CheckoutRemovePromoCodeDocument);
-
-const requestPasswordResetDocument = toTypedDocument<
-	RequestPasswordResetMutation,
-	RequestPasswordResetMutationVariables
->(RequestPasswordResetDocument);
 
 const userSetDefaultAddressDocument = toTypedDocument<
 	UserSetDefaultAddressMutation,
@@ -272,64 +262,6 @@ export async function attachCustomerToCheckout(checkoutId: string): Promise<Chec
 	}
 
 	return toCheckoutActionResult(result.data.checkoutCustomerAttach);
-}
-
-export async function registerCheckoutAccount(input: {
-	email: string;
-	password: string;
-	channel: string;
-	redirectUrl: string;
-}): Promise<SimpleActionResult> {
-	// Confirmation emails embed this URL — reject foreign origins (phishing vector).
-	if (!isAllowedRedirectUrl(input.redirectUrl)) {
-		const { server: t } = await getCheckoutServerTranslations();
-		console.warn(
-			"Received an invalid redirection URL for password reset. " +
-				"Make sure to configure NEXT_PUBLIC_STOREFRONT_URL, " +
-				"see https://github.com/saleor/saleor-docs/blob/-/docs/configuration/allowed-origins.md",
-			{ redirectUrl: input.redirectUrl },
-		);
-		return { ok: false, error: t("invalidRedirectUrl") };
-	}
-
-	const result = await rawMutation<{
-		accountRegister?: {
-			errors: Array<{ field?: string | null; message?: string | null; code?: string | null }>;
-		};
-	}>({
-		query: `mutation AccountRegister($input: AccountRegisterInput!) {
-			accountRegister(input: $input) {
-				errors { field message code }
-			}
-		}`,
-		variables: { input },
-	});
-
-	if (!result.ok) {
-		return { ok: false, error: result.error.message };
-	}
-
-	const errors = result.data.accountRegister?.errors ?? [];
-	if (errors.length > 0) {
-		const uniqueOnly = errors.every((error) => error.code === "UNIQUE");
-		if (uniqueOnly) {
-			return { ok: true };
-		}
-
-		const { server: t } = await getCheckoutServerTranslations();
-		return {
-			ok: false,
-			fieldErrors: errors.map(
-				(error): CheckoutFieldError => ({
-					field: error.field,
-					message: error.message ?? t("createAccountFailed"),
-					code: error.code as CheckoutFieldError["code"],
-				}),
-			),
-		};
-	}
-
-	return { ok: true };
 }
 
 type RecoverLine = { variantId: string; quantity: number };
@@ -697,42 +629,6 @@ export async function removeCheckoutPromoCode(
 	}
 
 	return toCheckoutActionResult(result.data.checkoutRemovePromoCode);
-}
-
-export async function requestCheckoutPasswordReset(input: {
-	email: string;
-	channel: string;
-	redirectUrl: string;
-}): Promise<SimpleActionResult> {
-	// Reset emails embed this URL — reject foreign origins (phishing vector).
-	if (!isAllowedRedirectUrl(input.redirectUrl)) {
-		const { server: t } = await getCheckoutServerTranslations();
-		console.warn(
-			"Received an invalid redirection URL for password reset. " +
-				"Make sure to configure NEXT_PUBLIC_STOREFRONT_URL, " +
-				"see https://github.com/saleor/saleor-docs/blob/-/docs/configuration/allowed-origins.md",
-			{ redirectUrl: input.redirectUrl },
-		);
-		return { ok: false, error: t("invalidRedirectUrl") };
-	}
-
-	const result = await rawMutation<RequestPasswordResetMutation>({
-		query: requestPasswordResetDocument.toString(),
-		variables: input,
-	});
-
-	if (!result.ok) {
-		return { ok: false, error: result.error.message };
-	}
-
-	// Swallow Saleor validation errors (e.g. unknown email) — same anti-enumeration
-	// posture as POST /api/auth/reset-password.
-	const errors = result.data.requestPasswordReset?.errors ?? [];
-	if (errors.length > 0) {
-		console.error("Checkout password reset validation errors");
-	}
-
-	return { ok: true };
 }
 
 export async function setUserDefaultAddress(

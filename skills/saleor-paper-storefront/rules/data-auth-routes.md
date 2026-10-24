@@ -1,6 +1,6 @@
 ---
 name: data-auth-routes
-description: BFF auth and PPR-safe account routes: /api/auth/*, HttpOnly cookies, resolveSessionUser, header chrome refresh. Use when touching login/session, account pages, or fixing 'uncached data outside Suspense' on routes that read cookies.
+description: Keycloak BFF auth and PPR-safe account routes: /api/auth/login + callback, HttpOnly cookies, getSessionAccessToken, resolveSessionUser, header chrome refresh. Use when touching login/session, account pages, or fixing 'uncached data outside Suspense' on routes that read cookies.
 ---
 
 # Authenticated Route Segments (PPR / Cache Components)
@@ -13,16 +13,15 @@ Anything that calls `cookies()`, `headers()`, or authenticated GraphQL is **dyna
 
 ## BFF auth (session lifecycle)
 
-Login, logout, and password reset go through **Next.js API routes**, not the browser Saleor SDK. Tokens are **HttpOnly** cookies set server-side via `getServerAuthClient()`.
+Customers sign in, sign up and reset passwords on **Keycloak's pages**; the storefront never sees a password. The OIDC Authorization Code flow (PKCE, confidential client, `openid-client`) runs in **Next.js API routes**, and the Keycloak tokens are **HttpOnly** cookies. Saleor accepts the Keycloak access token through its OpenID Connect plugin, so `sessionQuery` / `mutate` send it as the bearer (setup: `docs/configuration/keycloak.md`).
 
-| Route                                            | Purpose                                     |
-| ------------------------------------------------ | ------------------------------------------- |
-| `POST /api/auth/login`                           | `tokenCreate` → Set-Cookie                  |
-| `POST /api/auth/register`                        | Account registration                        |
-| `POST /api/auth/reset-password` / `set-password` | Request reset email / reset token → session |
-| `logout()` server action                         | Clear cookies + detach checkout             |
+| Route                    | Purpose                                                                                       |
+| ------------------------ | --------------------------------------------------------------------------------------------- |
+| `GET /api/auth/login`    | Redirect to Keycloak (`?signup=1`: registration page), browse locale as `ui_locales`          |
+| `GET /api/auth/callback` | Redeem the code, register a first-time customer with EOS (`ensureEosClient`), set cookies     |
+| `logout()` server action | Detach checkout + clear cookies; returns Keycloak's end-session URL, which the client follows |
 
-Client forms call `loginWithBff()` / `setPasswordWithBff()` (`src/lib/auth/bff-client.ts`). Commerce (cart, checkout lines) stays on **server actions** — do not proxy all GraphQL. The header user menu (`UserMenuServer`) calls `getHeaderUser()` inside Suspense — same server session as account pages, no client `me` fetch.
+Link to sign-in with `signInHref(returnTo)` (plain anchor or `window.location.assign`); `returnTo` is a same-origin path (`safeReturnPath`). `getSessionAccessToken()` refreshes the access token near expiry; during an RSC render the refreshed token serves the request without being written back. Account name, email and password are edited in Keycloak's account console (`keycloakAccountConsoleUrl()`). Commerce (cart, checkout lines) stays on **server actions** — do not proxy all GraphQL. The header user menu (`UserMenuServer`) calls `getHeaderUser()` inside Suspense — same server session as account pages, no client `me` fetch.
 
 ## Keeping header chrome fresh (Router Cache)
 
@@ -32,13 +31,13 @@ HttpOnly cookies are the source of truth, and the header auth/cart chrome render
 | ----------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | Same-tab mutation             | Add-to-cart, cart line edits, profile edits | Server action calls `refresh()` (`next/cache`) — re-renders this user's route in the action response                                        |
 | Cross-tab                     | Login/logout/cart change in another tab     | Mutators call `bumpChromeVersion()`; `HeaderChromeSync` compares on `storage`/`visibilitychange`/`pageshow` and refreshes once when visible |
-| Cross-surface / auth boundary | Login, logout, checkout → storefront        | **Hard navigation** — a fresh document needs no invalidation                                                                                |
+| Cross-surface / auth boundary | Login, logout, checkout → storefront        | **Hard navigation** (the Keycloak round trip is one) — a fresh document needs no invalidation                                               |
 
 **Do NOT `router.refresh()` on in-store soft navigation.** The header lives in the shared layout (preserved across sibling navigations), and every session/cart mutation already refreshes this user's chrome via the action's `refresh()`. A per-pathname refresh forces a server round-trip on every soft nav and defeats instant navigation to prerendered shells — most visibly returning to the homepage, which has no loading skeleton to mask the wait.
 
 **Do NOT revalidate on first paint or tab focus.** The removed `HeaderAuthRefresh` design called a Server Action that `revalidatePath`-ed the entire locale/channel layout on every hard load and every refocus — a **sitewide shared-cache purge per visitor**, billed at traffic scale (invocations, ISR writes, defeated CDN). First paint is already cookie-correct; cross-tab staleness is what the version bump exists for.
 
-**Hard navigation is required** when leaving `/checkout` or after login/logout — soft `router.push`/`<Link>` can restore a cached anonymous `UserMenuServer`. Use `syncAuthSurfacesAfterSignIn({ redirectTo })`, `useLogout({ channel })`, `navigateToStorefrontHome()`, or `StorefrontHomeLink` (plain anchor).
+**Hard navigation is required** when leaving `/checkout` or after login/logout — soft `router.push`/`<Link>` can restore a cached anonymous `UserMenuServer`. Sign-in always is one (Keycloak redirects back); otherwise use `useLogout({ channel })`, `navigateToStorefrontHome()`, or `StorefrontHomeLink` (plain anchor).
 
 ## Account architecture
 
@@ -48,7 +47,7 @@ Browse layouts use per-chrome slots; account uses a **layout-shell auth gate** (
 account/layout.tsx
 └── Suspense fallback={<AccountSkeleton />}
     └── AccountShell (async)
-        ├── no session / invalid user → <AccountLogin />   (LoginForm → BFF)
+        ├── no session / invalid user → <AccountLogin />   (SignInPanel → Keycloak)
         └── user → AccountProvider
             ├── AccountNav (static client)
             └── {children}   (sync pages + nested Suspense islands)
@@ -84,7 +83,7 @@ export default function AccountOverviewPage() {
 ## Anti-patterns
 
 ❌ `cookies()` / `getCurrentUser()` in an async page without a page/layout Suspense boundary
-❌ Browser → Saleor for login or `me` — use BFF routes + server `getHeaderUser()`
+❌ Browser → Saleor or Keycloak for tokens or `me` — use the `/api/auth/*` routes + server `getHeaderUser()`
 ❌ `connection()` in the account layout — can break PPR with `CartProvider` in the parent tree
 ❌ Wrapping only `<main>` in Suspense as a workaround — use the layout shell that owns the fetch
 ❌ `key={pathname}` without `router.refresh()` on header auth — remounting RSC children doesn't bust the Router Cache
@@ -94,17 +93,18 @@ export default function AccountOverviewPage() {
 
 ## Key files
 
-| Concern                | File                                                                                                              | Note                                                            |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Cookie presence        | `src/lib/auth/has-auth-session.ts`                                                                                | Same lookup as auth SDK (`readAuthCookieValue`)                 |
-| User profile           | `account/get-current-user.ts`                                                                                     | `React.cache()` — deduped per request                           |
-| Header user            | `src/lib/auth/get-header-user.ts`                                                                                 | guest / authenticated / unavailable                             |
-| Session resolution     | `src/lib/auth/resolve-session-user.ts`                                                                            | Classifies the `me` fetch; one server retry on transient errors |
-| Auth failure codes     | `src/lib/auth/session-auth-state.ts`                                                                              | `isDefinitiveAuthFailure` — Saleor JWT codes + message fallback |
-| BFF sign-in            | `src/lib/auth/bff-server.ts`, `/api/auth/login/route.ts`                                                          | HttpOnly cookies, rate limited                                  |
-| Client forms / profile | `bff-client.ts`, `account-context.tsx`                                                                            | `loginWithBff`; `useAccountUser()`                              |
-| Sign-in UI             | `account-login.tsx`                                                                                               | `LoginForm` in Suspense (no SDK provider)                       |
-| Chrome refresh         | `user-menu-server.tsx`, `header-chrome-sync.tsx`, `src/lib/chrome-sync.ts`, `sync-auth-surfaces-after-sign-in.ts` | Header auth chrome + cross-tab sync + post-login hard nav       |
-| Layouts                | `(main)/layout.tsx`, `account/layout.tsx`, `account/actions.ts`                                                   | Browse chrome vs account auth gate; `refresh()` after mutations |
+| Concern            | File                                                                                      | Note                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Session / tokens   | `src/lib/auth/session.ts`, `has-auth-session.ts`                                          | Keycloak cookies; refresh near expiry                           |
+| User profile       | `account/get-current-user.ts`                                                             | `React.cache()` — deduped per request                           |
+| Header user        | `src/lib/auth/get-header-user.ts`                                                         | guest / authenticated / unavailable                             |
+| Session resolution | `src/lib/auth/resolve-session-user.ts`                                                    | Classifies the `me` fetch; one server retry on transient errors |
+| Auth failure codes | `src/lib/auth/session-auth-state.ts`                                                      | `isDefinitiveAuthFailure` — Saleor JWT codes + message fallback |
+| OIDC flow          | `src/lib/auth/keycloak.ts`, `sign-in-attempt.ts`, `/api/auth/login`, `/api/auth/callback` | Discovery, PKCE + state cookie, code exchange                   |
+| EOS registration   | `src/lib/auth/eos.ts`                                                                     | First sign-in joins the tenant as a client                      |
+| Profile            | `account-context.tsx`                                                                     | `useAccountUser()`                                              |
+| Sign-in UI         | `account-login.tsx`, `sign-in-panel.tsx`                                                  | Anchors to `signInHref()`                                       |
+| Chrome refresh     | `user-menu-server.tsx`, `header-chrome-sync.tsx`, `src/lib/chrome-sync.ts`                | Header auth chrome + cross-tab sync                             |
+| Layouts            | `(main)/layout.tsx`, `account/layout.tsx`, `account/actions.ts`                           | Browse chrome vs account auth gate; `refresh()` after mutations |
 
-Related: [`data-caching.md`](data-caching.md) (page-boundary model), [`checkout-management.md`](checkout-management.md) (checkout BFF sign-in + `router.refresh()`).
+Related: [`data-caching.md`](data-caching.md) (page-boundary model), [`checkout-management.md`](checkout-management.md) (checkout sign-in round trip), [`data-redirect-security.md`](data-redirect-security.md) (`returnTo`).
