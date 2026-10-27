@@ -8,14 +8,18 @@ import { invariant } from "ts-invariant";
  * name and email come from the token.
  */
 export async function ensureEosClient(accessToken: string): Promise<void> {
-	const tenantId = process.env.EOS_TENANT_ID;
-	invariant(tenantId, "Missing EOS_TENANT_ID env variable");
-
+	// `tenantId` is empty unless the customer is already a member of the tenant the request named.
 	const me = (await eosRequest(accessToken, "GET", "/auth/me")) as { tenantId: string };
 	if (me.tenantId) {
 		return;
 	}
-	await eosRequest(accessToken, "POST", "/auth/register", { tenantId });
+	await eosRequest(accessToken, "POST", "/auth/register", { tenantId: eosTenantId() });
+}
+
+function eosTenantId(): string {
+	const tenantId = process.env.EOS_TENANT_ID;
+	invariant(tenantId, "Missing EOS_TENANT_ID env variable");
+	return tenantId;
 }
 
 async function eosRequest(
@@ -31,6 +35,8 @@ async function eosRequest(
 		method,
 		headers: {
 			Authorization: `Bearer ${accessToken}`,
+			// EOS binds the request to this tenant only if the caller is a member of it.
+			"X-Tenant-Id": eosTenantId(),
 			...(body === undefined ? {} : { "Content-Type": "application/json" }),
 		},
 		...(body === undefined ? {} : { body: JSON.stringify(body) }),
