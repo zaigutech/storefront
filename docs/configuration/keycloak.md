@@ -15,8 +15,8 @@ storefront server ──Authorization: Bearer <Keycloak access token>──▶ S
 
 ## 1. Keycloak client
 
-EOS provisions the realm and a confidential client `eos-storefront` (`scripts/provision-keycloak.sh`
-in the EOS repository, `EOS_STOREFRONT_URLS`). By hand, in the realm used by EOS:
+EOS provisions the realm and a confidential client `storefront` (`keycloak/provision-eos.sh`
+in the middleware repository, `EOS_STOREFRONT_URLS`). By hand, in the realm used by EOS:
 
 - Client authentication on, Standard flow only, PKCE method `S256`.
 - Valid redirect URI `<NEXT_PUBLIC_STOREFRONT_URL>/api/auth/callback`; valid post-logout redirect URIs
@@ -31,8 +31,8 @@ configuration, active:
 
 | Field                       | Value                                                                       |
 | --------------------------- | --------------------------------------------------------------------------- |
-| Client ID                   | `eos-storefront`                                                            |
-| Client secret               | the `eos-storefront` secret                                                 |
+| Client ID                   | `storefront`                                                                |
+| Client secret               | the `storefront` secret                                                     |
 | JSON Web Key Set URL        | `<Keycloak URL Saleor reaches>/realms/eos/protocol/openid-connect/certs`    |
 | User info URL               | `<Keycloak URL Saleor reaches>/realms/eos/protocol/openid-connect/userinfo` |
 | Use OAuth scope permissions | off (customers only; staff keep signing in to Saleor)                       |
@@ -67,7 +67,7 @@ registration (`ClientRegistered`) and also finds it by email, so either order en
 | ---------------------------- | --------------------------------------------------------------------- |
 | `NEXT_PUBLIC_STOREFRONT_URL` | `https://shop.example.com` (public origin; builds every redirect URI) |
 | `KEYCLOAK_ISSUER`            | `https://auth.example.com/realms/eos`                                 |
-| `KEYCLOAK_CLIENT_ID`         | `eos-storefront`                                                      |
+| `KEYCLOAK_CLIENT_ID`         | `storefront`                                                          |
 | `KEYCLOAK_CLIENT_SECRET`     | from the client's Credentials tab                                     |
 | `EOS_API_URL`                | `https://api.example.com/api`                                         |
 | `EOS_TENANT_ID`              | the tenant whose clients shop here                                    |
