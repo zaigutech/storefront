@@ -8,9 +8,10 @@ import { invariant } from "ts-invariant";
  * name and email come from the token.
  */
 export async function ensureEosClient(accessToken: string): Promise<void> {
-	// `tenantId` is empty unless the customer is already a member of the tenant the request named.
-	const me = (await eosRequest(accessToken, "GET", "/auth/me")) as { tenantId: string };
-	if (me.tenantId) {
+	// `client` says whether the customer is a client of the tenant the request named. A staff member has
+	// joined that tenant already but is no client of it until registered here.
+	const me = (await eosRequest(accessToken, "GET", "/auth/me")) as { client: boolean };
+	if (me.client) {
 		return;
 	}
 	await eosRequest(accessToken, "POST", "/auth/register", { tenantId: eosTenantId() });
