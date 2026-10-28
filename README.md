@@ -411,7 +411,7 @@ KEYCLOAK_ISSUER=https://auth.example.com/realms/eos  # Customer sign-in — see 
 KEYCLOAK_CLIENT_ID=storefront
 KEYCLOAK_CLIENT_SECRET=
 EOS_API_URL=https://api.example.com/api              # First sign-in registers the customer with EOS
-EOS_TENANT_ID=
+EOS_TENANT_ID=00000000-0000-7000-8000-000000000000   # EOS's seed tenant
 
 # Multi-channel (recommended)
 STOREFRONT_CHANNELS=us,uk,eu                         # Comma-separated allowlist — routes, revalidation, footer

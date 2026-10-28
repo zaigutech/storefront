@@ -70,7 +70,7 @@ registration (`ClientRegistered`) and also finds it by email, so either order en
 | `KEYCLOAK_CLIENT_ID`         | `storefront`                                                          |
 | `KEYCLOAK_CLIENT_SECRET`     | from the client's Credentials tab                                     |
 | `EOS_API_URL`                | `https://api.example.com/api`                                         |
-| `EOS_TENANT_ID`              | the tenant whose clients shop here                                    |
+| `EOS_TENANT_ID`              | `00000000-0000-7000-8000-000000000000` (EOS's seed tenant)            |
 
 Name, email and password changes happen in Keycloak's account console (linked from account
 settings); Saleor picks up name and email from the token on the next request.
