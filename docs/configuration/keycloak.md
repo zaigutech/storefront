@@ -26,21 +26,19 @@ in the middleware repository, `EOS_STOREFRONT_URLS`). By hand, in the realm used
 ## 2. Saleor OpenID Connect plugin
 
 Saleor accepts a Keycloak access token once its built-in OpenID Connect plugin knows the realm's
-keys and user info endpoint. Dashboard → **Configuration → Plugins → OpenID Connect**, global
-configuration, active:
+keys and user info endpoint. saleor-platform configures the plugin
+([`docs/operations/oidc-setup.md`](../../../saleor-platform/docs/operations/oidc-setup.md)); the
+fields the storefront relies on are:
 
 | Field                       | Value                                                                       |
 | --------------------------- | --------------------------------------------------------------------------- |
-| Client ID                   | `storefront`                                                                |
-| Client secret               | the `storefront` secret                                                     |
 | JSON Web Key Set URL        | `<Keycloak URL Saleor reaches>/realms/eos/protocol/openid-connect/certs`    |
 | User info URL               | `<Keycloak URL Saleor reaches>/realms/eos/protocol/openid-connect/userinfo` |
-| Use OAuth scope permissions | off (customers only; staff keep signing in to Saleor)                       |
+| Use OAuth scope permissions | off (customers get no Dashboard permission from their token)                |
 
-The plugin refuses to activate without a client ID and secret, but uses them only for its own
-sign-in flow, which stays off: leave the authorization, token and logout URLs empty, because the
-storefront runs the flow. To script it, `pluginUpdate(id: "mirumee.authentication.openidconnect")`
-with a token holding `MANAGE_PLUGINS` sets the same fields.
+The plugin's client ID, secret and authorization/token URLs belong to its own sign-in flow, which
+signs the Saleor Dashboard in with the `saleor-dashboard` client; checking a storefront token does
+not use them.
 
 Keycloak must issue tokens under one fixed issuer (`KC_HOSTNAME`): its user info endpoint rejects a
 token whose issuer differs from the one it would issue on that request. With `KC_HOSTNAME` set,
