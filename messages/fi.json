@@ -377,7 +377,8 @@
 		"contact": {
 			"title": "Yhteystiedot",
 			"haveAccount": "Onko sinulla tili?",
-			"signedIn": "Kirjautuneena"
+			"signedIn": "Kirjautuneena",
+			"signInRequired": "Kirjaudu sisään tilataksesi. Tilaukset tehdään asiakastililtäsi."
 		},
 		"summary": {
 			"title": "Tilauksen yhteenveto",
@@ -521,7 +522,8 @@
 			"validationRulesUnavailable": "Validointisäännöt eivät ole saatavilla",
 			"setDefaultAddressFailed": "Oletusosoitteen asettaminen epäonnistui",
 			"dummyNotAllowed": "Testimaksu ei ole käytettävissä tässä ympäristössä.",
-			"stripeNotEnabled": "Stripe-maksut eivät ole käytössä tässä ympäristössä. Aseta NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true kaupassa."
+			"stripeNotEnabled": "Stripe-maksut eivät ole käytössä tässä ympäristössä. Aseta NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true kaupassa.",
+			"signInRequired": "Sinun täytyy kirjautua sisään tilataksesi."
 		},
 		"gateways": {
 			"noneTitle": "Maksuyhdyskäytävää ei ole määritetty",

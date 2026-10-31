@@ -1,4 +1,4 @@
-/** Contact components: guest email, signed-in customer. */
+/** Contact components: signed-in customer, sign-in prompt (no guest checkout). */
 
 export { SignedInUser, type SignedInUserProps } from "./signed-in-user";
-export { GuestContact, type GuestContactProps } from "./guest-contact";
+export { SignInRequired, type SignInRequiredProps } from "./sign-in-required";

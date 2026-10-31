@@ -4,6 +4,7 @@ import { buildCheckoutPath, buildOrderStatusPath } from "@paper/session-bridge";
 import { DefaultChannelSlug } from "@/app/config";
 import { CheckoutApp } from "@/checkout/checkout-app";
 import { resolveBrowseLocaleForCheckout } from "@/lib/browse-locale-server";
+import { requireCheckoutSignIn } from "@/lib/auth/require-checkout-sign-in";
 import { getStorefrontContent } from "@/lib/content/server";
 import { loadCheckoutMessages } from "@/i18n/load-messages";
 import type {
@@ -47,6 +48,10 @@ export async function CheckoutSessionLoader({
 	if (orderId) {
 		redirect(buildOrderStatusPath(orderId, searchParams.locale));
 	}
+
+	await requireCheckoutSignIn(
+		checkoutIdFromUrl ? buildCheckoutPath({ checkoutId: checkoutIdFromUrl, browseLocale }) : "/checkout",
+	);
 
 	if (!checkoutIdFromUrl) {
 		const checkoutIdFromCartCookie = await Checkout.getFirstCheckoutIdFromCartCookies();

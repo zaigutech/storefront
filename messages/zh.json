@@ -377,7 +377,8 @@
 		"contact": {
 			"title": "联系方式",
 			"haveAccount": "已有账户？",
-			"signedIn": "已登录"
+			"signedIn": "已登录",
+			"signInRequired": "请登录后结账。订单将通过您的客户账户下达。"
 		},
 		"summary": {
 			"title": "订单摘要",
@@ -520,7 +521,8 @@
 			"validationRulesUnavailable": "验证规则不可用",
 			"setDefaultAddressFailed": "设置默认地址失败",
 			"dummyNotAllowed": "此环境不支持测试支付。",
-			"stripeNotEnabled": "此环境未启用 Stripe 支付。请在店面设置 NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true。"
+			"stripeNotEnabled": "此环境未启用 Stripe 支付。请在店面设置 NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true。",
+			"signInRequired": "您需要登录才能结账。"
 		},
 		"gateways": {
 			"noneTitle": "未配置支付网关",

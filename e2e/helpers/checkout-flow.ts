@@ -25,7 +25,8 @@ export async function simulateCheckoutStep(page: Page, step: CheckoutStepSlug): 
 	}, step);
 }
 
-export async function addFirstProductAndOpenCheckout(page: Page): Promise<void> {
+/** Adds the product to the cart and navigates to its checkout; returns once the navigation started. */
+export async function openCheckoutWithCart(page: Page): Promise<void> {
 	await page.goto(checkoutProductPath);
 	await expect(page.locator("h1").first()).toBeVisible({ timeout: 30_000 });
 
@@ -49,12 +50,23 @@ export async function addFirstProductAndOpenCheckout(page: Page): Promise<void> 
 		throw new Error("checkoutId cookie missing after add-to-cart");
 	}
 
-	await page.goto(`/checkout?checkout=${checkoutId}&step=contact&locale=${checkoutLocale}`);
-	await expect(page).toHaveURL(/\/checkout\?.*checkout=/, { timeout: 30_000 });
-	await expect(page.getByRole("textbox", { name: /adresse e-mail|email address/i })).toBeVisible({
-		timeout: 30_000,
+	await page.goto(`/checkout?checkout=${checkoutId}&step=contact&locale=${checkoutLocale}`, {
+		waitUntil: "commit",
 	});
 }
+
+/** Needs a signed-in shopper (see `signedInStorageState`) — there is no guest checkout. */
+export async function addFirstProductAndOpenCheckout(page: Page): Promise<void> {
+	await openCheckoutWithCart(page);
+	await expect(page).toHaveURL(/\/checkout\?.*checkout=/, { timeout: 30_000 });
+	await expect(page.getByText(/^(connecté|signed in)$/i)).toBeVisible({ timeout: 30_000 });
+}
+
+/**
+ * Playwright storage state of a signed-in customer (e.g. saved after a Keycloak sign-in with
+ * `context.storageState({ path })`). Checkout specs skip without it.
+ */
+export const signedInStorageState = process.env.E2E_SIGNED_IN_STORAGE_STATE;
 
 /** Assert `?step=` and that it stays stable — catches guard/heal fighting browser Back. */
 export async function expectStep(

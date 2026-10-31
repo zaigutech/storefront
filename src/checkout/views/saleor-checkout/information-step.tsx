@@ -2,13 +2,8 @@
 
 import { useState, useCallback, type FC } from "react";
 import { signInHref } from "@/lib/auth";
-import { isCheckoutMarketingConsentEnabled } from "@/checkout/lib/marketing-consent";
 import { Button } from "@/ui/components/ui/button";
-import {
-	updateCheckoutEmail,
-	updateCheckoutMarketingConsent,
-	updateCheckoutShippingAddress,
-} from "@/app/(checkout)/actions";
+import { updateCheckoutShippingAddress } from "@/app/(checkout)/actions";
 import { type CheckoutFragment, type CountryCode } from "@/checkout/graphql";
 import type { CheckoutUser, ServerCheckout } from "@/checkout/lib/checkout-types";
 import { checkoutLinesSignature } from "@/checkout/lib/checkout-sync";
@@ -21,7 +16,6 @@ import {
 	isSameAddressInput,
 } from "@/checkout/components/address-form/utils";
 import { useUser } from "@/checkout/hooks/use-user";
-import { useOrphanedCheckoutRecovery } from "@/checkout/hooks/use-orphaned-checkout-recovery";
 import { mapAddressFieldErrors } from "@/checkout/lib/address-field-errors";
 import {
 	availabilityIssueFromFieldErrors,
@@ -85,24 +79,13 @@ const InformationStepForm: FC<InformationStepFormProps> = ({
 }) => {
 	const t = useTranslations("checkout.actions");
 	const tErrors = useTranslations("checkout.errors");
-	const tAccount = useTranslations("account.errors");
 	const { setAvailabilityIssue } = useCheckoutAvailability();
 	const infoStep = useCheckoutStepNumber("INFO", checkout.isShippingRequired);
-	const {
-		isOrphaned,
-		isRecovering,
-		error: recoveryError,
-		recoverAsGuest,
-	} = useOrphanedCheckoutRecovery(checkout);
 	const { availableShippingCountries, resolveBlankCountry } = useAvailableShippingCountries();
 	const shippingAddress = checkout.shippingAddress;
 	const defaultCountry = resolveBlankCountry(shippingAddress?.country?.code);
 
-	// ----- Contact form state -----
-	const [email, setEmail] = useState(() => (isOrphaned ? "" : checkout.email || ""));
-	const [subscribeNews, setSubscribeNews] = useState(false);
-
-	// ----- Address form state (for guests/new address) -----
+	// ----- Address form state (for new address) -----
 	const [countryCode, setCountryCode] = useState<CountryCode>(defaultCountry);
 	const countryInList = availableShippingCountries.some((country) => country.code === countryCode);
 	const effectiveCountryCode = countryInList ? countryCode : defaultCountry;
@@ -162,19 +145,6 @@ const InformationStepForm: FC<InformationStepFormProps> = ({
 		useAddressFormUtils(effectiveCountryCode);
 
 	// ----- Event Handlers -----
-	const validateEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-	const handleEmailChange = (value: string) => {
-		setEmail(value);
-		if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
-	};
-
-	const handleEmailBlur = () => {
-		if (email && !validateEmail(email)) {
-			setErrors((prev) => ({ ...prev, email: tAccount("invalidEmail") }));
-		}
-	};
-
 	const handleFieldChange = (field: string, value: string) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
 		if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
@@ -237,15 +207,10 @@ const InformationStepForm: FC<InformationStepFormProps> = ({
 				event.preventDefault();
 			}
 
-			if (isSubmitting) return;
+			// No guest checkout — the contact section asks to sign in instead.
+			if (isSubmitting || !authenticated) return;
 
 			const newErrors: Record<string, string> = {};
-
-			// Validate email (guests only)
-			if (!authenticated) {
-				if (!email) newErrors.email = tErrors("emailRequired");
-				else if (!validateEmail(email)) newErrors.email = tAccount("invalidEmail");
-			}
 
 			// Validate shipping address (if required)
 			if (checkout.isShippingRequired) {
@@ -279,44 +244,10 @@ const InformationStepForm: FC<InformationStepFormProps> = ({
 				return;
 			}
 
-			if (isOrphaned) {
-				setErrors({
-					email: tErrors("orphanedCartBlocked"),
-				});
-				return;
-			}
-
 			setIsSubmitting(true);
 			setAvailabilityIssue(null);
 			try {
 				let updatedCheckout: ServerCheckout = checkout;
-
-				if (!authenticated) {
-					if (checkout.email !== email) {
-						const emailResult = await updateCheckoutEmail(checkout.id, email);
-						if (!emailResult.ok) {
-							if (emailResult.fieldErrors?.length) {
-								const errorMap: Record<string, string> = {};
-								emailResult.fieldErrors.forEach((err) => {
-									errorMap[err.field || "email"] = err.message || tErrors("invalidValue");
-								});
-								setErrors(errorMap);
-							} else {
-								setErrors({ email: emailResult.error ?? tErrors("updateEmailFailed") });
-							}
-							return;
-						}
-						updatedCheckout = emailResult.checkout;
-					}
-
-					if (isCheckoutMarketingConsentEnabled()) {
-						try {
-							await updateCheckoutMarketingConsent(updatedCheckout.id, subscribeNews);
-						} catch {
-							// Optional metadata — never block guest continue.
-						}
-					}
-				}
 
 				if (checkout.isShippingRequired) {
 					let addressInput;
@@ -386,9 +317,6 @@ const InformationStepForm: FC<InformationStepFormProps> = ({
 			checkout,
 			isSubmitting,
 			authenticated,
-			isOrphaned,
-			email,
-			subscribeNews,
 			user?.addresses,
 			showNewAddressForm,
 			isEnteringNewAddress,
@@ -417,27 +345,6 @@ const InformationStepForm: FC<InformationStepFormProps> = ({
 
 	return (
 		<form className="space-y-8" method="post" action="#" onSubmit={handleSubmit} noValidate>
-			{isOrphaned ? (
-				<div className="space-y-3 rounded-lg border border-border bg-muted/40 p-4">
-					<p className="text-sm text-foreground">{tErrors("orphanedCartMessage")}</p>
-					<div className="flex flex-wrap gap-3">
-						<Button
-							type="button"
-							variant="outline-solid"
-							size="sm"
-							disabled={isRecovering}
-							onClick={() => void recoverAsGuest()}
-						>
-							{isRecovering ? t("preparingGuestCart") : t("continueAsGuest")}
-						</Button>
-						<Button type="button" variant="ghost" size="sm" onClick={signIn}>
-							{t("logIn")}
-						</Button>
-					</div>
-					{recoveryError ? <p className="text-sm text-destructive">{recoveryError}</p> : null}
-				</div>
-			) : null}
-
 			{errors.form ? <p className="text-sm text-destructive">{errors.form}</p> : null}
 
 			<ContactSection
@@ -449,15 +356,8 @@ const InformationStepForm: FC<InformationStepFormProps> = ({
 					setShowNewAddressForm(false);
 					setSelectedAddressId(null);
 					setIsEnteringNewAddress(true);
-					setEmail(checkout.email || "");
 				}}
 				onSignInClick={signIn}
-				email={email}
-				onEmailChange={handleEmailChange}
-				onEmailBlur={handleEmailBlur}
-				emailError={errors.email}
-				subscribeNews={subscribeNews}
-				onSubscribeChange={setSubscribeNews}
 			/>
 
 			{checkout.isShippingRequired && (
