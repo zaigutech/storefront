@@ -5,6 +5,7 @@ import {
 	advanceToPayment,
 	advanceToShipping,
 	expectStep,
+	signedInStorageState,
 } from "./helpers/checkout-flow";
 
 /**
@@ -17,6 +18,8 @@ import {
  */
 test.describe("checkout shallow step URL — browser Back", () => {
 	test.describe.configure({ mode: "serial", timeout: 120_000 });
+	test.skip(!signedInStorageState, "Checkout needs a signed-in shopper: set E2E_SIGNED_IN_STORAGE_STATE");
+	test.use({ storageState: signedInStorageState });
 
 	test("Back from shipping lands on contact and stays there", async ({ page }) => {
 		await addFirstProductAndOpenCheckout(page);

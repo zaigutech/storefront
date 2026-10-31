@@ -87,6 +87,7 @@ import { checkoutGraphqlLanguageCode, resolveCheckoutLocaleSlug } from "@/lib/ch
 import { emitCommerceEvent } from "@/lib/analytics/emit.server";
 import { checkoutCreateContextMetadata } from "@/lib/commerce-context/checkout-create-context";
 import { graphqlLanguageCodeVariables } from "@/lib/graphql-locale";
+import { hasAuthSession } from "@/lib/auth/has-auth-session";
 import { liveQuery, mutate } from "@/lib/saleor";
 import * as Checkout from "@/lib/checkout";
 import { saveCheckoutId } from "@/app/actions";
@@ -178,6 +179,15 @@ const userSetDefaultAddressDocument = toTypedDocument<
 	UserSetDefaultAddressMutation,
 	UserSetDefaultAddressMutationVariables
 >(UserSetDefaultAddressDocument);
+
+/** No guest checkout: paying and completing need a signed-in customer (see `require-checkout-sign-in`). */
+async function signInRequiredError(): Promise<string | null> {
+	if (await hasAuthSession()) {
+		return null;
+	}
+	const { server: t } = await getCheckoutServerTranslations();
+	return t("signInRequired");
+}
 
 /** Live checkout read for client sync — bypasses Next.js router/RSC cache. */
 export async function syncCheckoutFromServer(checkoutId: string): Promise<CheckoutFetchResult> {
@@ -411,6 +421,11 @@ export async function initializePaymentGateways(
 export async function initializeCheckoutTransaction(
 	variables: TransactionInitializeMutationVariables,
 ): Promise<TransactionInitializeActionResult> {
+	const signInError = await signInRequiredError();
+	if (signInError) {
+		return { ok: false, error: signInError };
+	}
+
 	const { server: t } = await getCheckoutServerTranslations();
 
 	const dummyGuardError = getDummyPaymentGuardError(variables.paymentGateway?.id);
@@ -463,6 +478,11 @@ export async function initializeCheckoutTransaction(
 export async function processCheckoutTransaction(
 	variables: TransactionProcessMutationVariables,
 ): Promise<TransactionProcessActionResult> {
+	const signInError = await signInRequiredError();
+	if (signInError) {
+		return { ok: false, error: signInError };
+	}
+
 	// Mirror the initialize guards: when every integrated gateway is disabled for this
 	// environment, a direct call to this action must not drive transactions either.
 	// Forks adding gateways should extend this check alongside the initialize guards.
@@ -494,6 +514,22 @@ export async function processCheckoutTransaction(
 }
 
 export async function runCheckoutComplete(checkoutId: string): Promise<CheckoutCompleteActionResult> {
+	const signInError = await signInRequiredError();
+	if (signInError) {
+		return { ok: false, error: signInError };
+	}
+
+	// The order takes its customer from the checkout — make sure it is the signed-in one.
+	const attached = await attachCustomerToCheckout(checkoutId);
+	if (!attached.ok) {
+		const { server: t } = await getCheckoutServerTranslations();
+		return {
+			ok: false,
+			error: attached.error ?? t("completeOrderFailed"),
+			fieldErrors: attached.fieldErrors,
+		};
+	}
+
 	// Before complete — Saleor copies checkout public metadata onto the order.
 	await enrichCheckoutCommerceContext(checkoutId);
 

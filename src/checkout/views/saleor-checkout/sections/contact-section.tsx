@@ -2,11 +2,7 @@
 
 import { type FC } from "react";
 import { useTranslations } from "next-intl";
-import { Label } from "@/ui/components/ui/label";
-import { Checkbox } from "@/ui/components/ui/checkbox";
-import { SignedInUser, GuestContact } from "@/checkout/components/contact";
-import { isCheckoutMarketingConsentEnabled } from "@/checkout/lib/marketing-consent";
-import { useCheckoutContent } from "@/lib/content";
+import { SignedInUser, SignInRequired } from "@/checkout/components/contact";
 
 // User type matching what useUser() returns
 type User = {
@@ -25,20 +21,10 @@ interface ContactSectionProps {
 	isSignedIn: boolean;
 	user: User | null | undefined;
 	checkoutId?: string;
-	/** True while resolving session (avoids guest UI flash when auth cookies exist) */
+	/** True while resolving session (avoids sign-in prompt flash when auth cookies exist) */
 	isLoading?: boolean;
 	onSignOut: () => void;
 	onSignInClick: () => void;
-
-	// Email state (guests)
-	email: string;
-	onEmailChange: (value: string) => void;
-	onEmailBlur: () => void;
-	emailError?: string;
-
-	// Subscribe state (guests)
-	subscribeNews: boolean;
-	onSubscribeChange: (value: boolean) => void;
 }
 
 // =============================================================================
@@ -52,15 +38,8 @@ export const ContactSection: FC<ContactSectionProps> = ({
 	isLoading = false,
 	onSignOut,
 	onSignInClick,
-	email,
-	onEmailChange,
-	onEmailBlur,
-	emailError,
-	subscribeNews,
-	onSubscribeChange,
 }) => {
 	const t = useTranslations("checkout.contact");
-	const { marketingOptInLabel } = useCheckoutContent();
 
 	if (isLoading) {
 		return (
@@ -71,37 +50,15 @@ export const ContactSection: FC<ContactSectionProps> = ({
 		);
 	}
 
+	// No guest checkout: without a customer there is only the way to sign in.
+	if (!isSignedIn || !user) {
+		return <SignInRequired onSignInClick={onSignInClick} />;
+	}
+
 	return (
 		<section className="space-y-4">
-			{isSignedIn && user ? (
-				<>
-					<h2 className="text-xl font-semibold">{t("title")}</h2>
-					<SignedInUser user={user} checkoutId={checkoutId} onSignOut={onSignOut} />
-				</>
-			) : (
-				<>
-					<GuestContact
-						email={email}
-						onEmailChange={onEmailChange}
-						onEmailBlur={onEmailBlur}
-						emailError={emailError}
-						onSignInClick={onSignInClick}
-					/>
-
-					{isCheckoutMarketingConsentEnabled() && (
-						<div className="flex items-center gap-3">
-							<Checkbox
-								id="subscribe"
-								checked={subscribeNews}
-								onCheckedChange={(checked) => onSubscribeChange(checked === true)}
-							/>
-							<Label htmlFor="subscribe" className="cursor-pointer text-sm text-muted-foreground">
-								{marketingOptInLabel}
-							</Label>
-						</div>
-					)}
-				</>
-			)}
+			<h2 className="text-xl font-semibold">{t("title")}</h2>
+			<SignedInUser user={user} checkoutId={checkoutId} onSignOut={onSignOut} />
 		</section>
 	);
 };

@@ -377,7 +377,8 @@
 		"contact": {
 			"title": "Kontakt",
 			"haveAccount": "Haben Sie bereits ein Konto?",
-			"signedIn": "Angemeldet"
+			"signedIn": "Angemeldet",
+			"signInRequired": "Melde dich an, um zur Kasse zu gehen. Bestellungen werden über dein Kundenkonto aufgegeben."
 		},
 		"summary": {
 			"title": "Bestellübersicht",
@@ -521,7 +522,8 @@
 			"validationRulesUnavailable": "Validierungsregeln nicht verfügbar",
 			"setDefaultAddressFailed": "Standardadresse konnte nicht festgelegt werden",
 			"dummyNotAllowed": "Testzahlung ist in dieser Umgebung nicht verfügbar.",
-			"stripeNotEnabled": "Stripe-Zahlungen sind in dieser Umgebung nicht aktiviert. Setzen Sie NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true in der Storefront."
+			"stripeNotEnabled": "Stripe-Zahlungen sind in dieser Umgebung nicht aktiviert. Setzen Sie NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true in der Storefront.",
+			"signInRequired": "Zum Bezahlen musst du angemeldet sein."
 		},
 		"gateways": {
 			"noneTitle": "Kein Zahlungsgateway konfiguriert",

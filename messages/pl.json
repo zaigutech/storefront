@@ -377,7 +377,8 @@
 		"contact": {
 			"title": "Kontakt",
 			"haveAccount": "Masz konto?",
-			"signedIn": "Zalogowano"
+			"signedIn": "Zalogowano",
+			"signInRequired": "Zaloguj się, aby złożyć zamówienie. Zamówienia są składane z Twojego konta klienta."
 		},
 		"summary": {
 			"title": "Podsumowanie",
@@ -521,7 +522,8 @@
 			"validationRulesUnavailable": "Reguły walidacji są niedostępne",
 			"setDefaultAddressFailed": "Nie udało się ustawić domyślnego adresu",
 			"dummyNotAllowed": "Płatność testowa nie jest dostępna w tym środowisku.",
-			"stripeNotEnabled": "Płatności Stripe nie są włączone w tym środowisku. Ustaw NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true w witrynie."
+			"stripeNotEnabled": "Płatności Stripe nie są włączone w tym środowisku. Ustaw NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true w witrynie.",
+			"signInRequired": "Aby złożyć zamówienie, musisz być zalogowany."
 		},
 		"gateways": {
 			"noneTitle": "Brak skonfigurowanej bramki płatności",

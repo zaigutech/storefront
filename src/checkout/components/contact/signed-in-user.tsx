@@ -25,12 +25,13 @@ export const SignedInUser: FC<SignedInUserProps> = ({ user, checkoutId, onSignOu
 		if (checkoutId) {
 			await detachCheckoutCustomer(checkoutId);
 		}
-		await logout({ stayOnPage: true });
+		// Checkout needs a signed-in customer, so signing out leaves it.
+		await logout();
 		onSignOut();
 	};
 
 	return (
-		<div className="bg-muted/30 flex items-center gap-3 rounded-lg border border-border p-4">
+		<div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 p-4">
 			<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground text-background">
 				{user.email.charAt(0).toUpperCase()}
 			</div>

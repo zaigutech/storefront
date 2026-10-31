@@ -377,7 +377,8 @@
 		"contact": {
 			"title": "Contact",
 			"haveAccount": "Vous avez un compte ?",
-			"signedIn": "Connecté"
+			"signedIn": "Connecté",
+			"signInRequired": "Connectez-vous pour passer commande. Les commandes sont passées depuis votre compte client."
 		},
 		"summary": {
 			"title": "Récapitulatif de commande",
@@ -521,7 +522,8 @@
 			"validationRulesUnavailable": "Règles de validation non disponibles",
 			"setDefaultAddressFailed": "Échec de la définition de l'adresse par défaut",
 			"dummyNotAllowed": "Le paiement test n'est pas disponible dans cet environnement.",
-			"stripeNotEnabled": "Les paiements Stripe ne sont pas activés dans cet environnement. Définissez NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true sur la boutique."
+			"stripeNotEnabled": "Les paiements Stripe ne sont pas activés dans cet environnement. Définissez NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true sur la boutique.",
+			"signInRequired": "Vous devez être connecté pour passer commande."
 		},
 		"gateways": {
 			"noneTitle": "Aucune passerelle de paiement configurée",

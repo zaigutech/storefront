@@ -377,7 +377,8 @@
 		"contact": {
 			"title": "連絡先",
 			"haveAccount": "アカウントをお持ちですか？",
-			"signedIn": "サインイン済み"
+			"signedIn": "サインイン済み",
+			"signInRequired": "購入手続きを行うにはサインインしてください。ご注文はお客様のアカウントから行われます。"
 		},
 		"summary": {
 			"title": "注文内容",
@@ -518,7 +519,8 @@
 			"validationRulesUnavailable": "検証ルールを利用できません",
 			"setDefaultAddressFailed": "既定の住所の設定に失敗しました",
 			"dummyNotAllowed": "この環境ではテスト決済を利用できません。",
-			"stripeNotEnabled": "この環境ではStripe決済が有効になっていません。ストアフロントで NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true を設定してください。"
+			"stripeNotEnabled": "この環境ではStripe決済が有効になっていません。ストアフロントで NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true を設定してください。",
+			"signInRequired": "購入手続きにはサインインが必要です。"
 		},
 		"gateways": {
 			"noneTitle": "決済ゲートウェイが設定されていません",

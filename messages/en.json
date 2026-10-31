@@ -377,7 +377,8 @@
 		"contact": {
 			"title": "Contact",
 			"haveAccount": "Have an account?",
-			"signedIn": "Signed in"
+			"signedIn": "Signed in",
+			"signInRequired": "Sign in to check out. Orders are placed from your customer account."
 		},
 		"summary": {
 			"title": "Order Summary",
@@ -520,7 +521,8 @@
 			"validationRulesUnavailable": "Validation rules not available",
 			"setDefaultAddressFailed": "Failed to set default address",
 			"dummyNotAllowed": "Test payment is not available in this environment.",
-			"stripeNotEnabled": "Stripe payments are not enabled in this environment. Set NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true on the storefront."
+			"stripeNotEnabled": "Stripe payments are not enabled in this environment. Set NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true on the storefront.",
+			"signInRequired": "You need to be signed in to check out."
 		},
 		"gateways": {
 			"noneTitle": "No payment gateway configured",

@@ -377,7 +377,8 @@
 		"contact": {
 			"title": "Kontakt",
 			"haveAccount": "Har du en konto?",
-			"signedIn": "Innlogget"
+			"signedIn": "Innlogget",
+			"signInRequired": "Logg inn for å gå til kassen. Bestillinger legges inn fra kundekontoen din."
 		},
 		"summary": {
 			"title": "Ordresammendrag",
@@ -521,7 +522,8 @@
 			"validationRulesUnavailable": "Valideringsregler er ikke tilgjengelige",
 			"setDefaultAddressFailed": "Kunne ikke angi standardadresse",
 			"dummyNotAllowed": "Testbetaling er ikke tilgjengelig i dette miljøet.",
-			"stripeNotEnabled": "Stripe-betalinger er ikke aktivert i dette miljøet. Sett NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true i butikken."
+			"stripeNotEnabled": "Stripe-betalinger er ikke aktivert i dette miljøet. Sett NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true i butikken.",
+			"signInRequired": "Du må være logget inn for å gå til kassen."
 		},
 		"gateways": {
 			"noneTitle": "Ingen betalingsgateway konfigurert",
