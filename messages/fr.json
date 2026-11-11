@@ -523,7 +523,8 @@
 			"setDefaultAddressFailed": "Échec de la définition de l'adresse par défaut",
 			"dummyNotAllowed": "Le paiement test n'est pas disponible dans cet environnement.",
 			"stripeNotEnabled": "Les paiements Stripe ne sont pas activés dans cet environnement. Définissez NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true sur la boutique.",
-			"signInRequired": "Vous devez être connecté pour passer commande."
+			"signInRequired": "Vous devez être connecté pour passer commande.",
+			"billingCountryUnavailable": "Impossible de définir le pays de facturation de cette commande. Veuillez contacter le support."
 		},
 		"gateways": {
 			"noneTitle": "Aucune passerelle de paiement configurée",

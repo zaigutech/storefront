@@ -523,7 +523,8 @@
 			"setDefaultAddressFailed": "Oletusosoitteen asettaminen epäonnistui",
 			"dummyNotAllowed": "Testimaksu ei ole käytettävissä tässä ympäristössä.",
 			"stripeNotEnabled": "Stripe-maksut eivät ole käytössä tässä ympäristössä. Aseta NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true kaupassa.",
-			"signInRequired": "Sinun täytyy kirjautua sisään tilataksesi."
+			"signInRequired": "Sinun täytyy kirjautua sisään tilataksesi.",
+			"billingCountryUnavailable": "Tälle tilaukselle ei voi asettaa laskutusmaata. Ota yhteyttä asiakastukeen."
 		},
 		"gateways": {
 			"noneTitle": "Maksuyhdyskäytävää ei ole määritetty",

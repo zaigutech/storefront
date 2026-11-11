@@ -30,6 +30,8 @@ export type CheckoutTransport = {
 		billingAddress: AddressInput;
 		saveAddress: boolean;
 	}) => Promise<CheckoutActionResult>;
+	/** Fork: country-only billing for a checkout that ships nothing (`no-shipping-billing`). */
+	setNoShippingBillingAddress?: (checkoutId: string) => Promise<CheckoutActionResult>;
 	/** `checkoutCustomerAttach` — binds the logged-in user to an anonymous checkout. */
 	attachCustomer: (checkoutId: string) => Promise<CheckoutActionResult>;
 	initializePaymentGateways: (
