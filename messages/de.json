@@ -523,7 +523,8 @@
 			"setDefaultAddressFailed": "Standardadresse konnte nicht festgelegt werden",
 			"dummyNotAllowed": "Testzahlung ist in dieser Umgebung nicht verfügbar.",
 			"stripeNotEnabled": "Stripe-Zahlungen sind in dieser Umgebung nicht aktiviert. Setzen Sie NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true in der Storefront.",
-			"signInRequired": "Zum Bezahlen musst du angemeldet sein."
+			"signInRequired": "Zum Bezahlen musst du angemeldet sein.",
+			"billingCountryUnavailable": "Für diesen Checkout kann kein Rechnungsland festgelegt werden. Bitte kontaktieren Sie den Support."
 		},
 		"gateways": {
 			"noneTitle": "Kein Zahlungsgateway konfiguriert",

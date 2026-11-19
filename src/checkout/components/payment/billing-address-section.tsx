@@ -197,6 +197,11 @@ export const BillingAddressSection: FC<BillingAddressSectionProps> = ({
 		setFormData((prev) => ({ ...prev, countryArea: "" }));
 	};
 
+	// Fork: a checkout that ships nothing gets a country-only billing address (`no-shipping-billing`).
+	if (!isShippingRequired) {
+		return sectionError ? <p className="text-sm text-destructive">{sectionError}</p> : null;
+	}
+
 	// Don't show form if same as shipping
 	const showForm = !sameAsBilling || !hasShippingAddress;
 

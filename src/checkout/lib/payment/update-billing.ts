@@ -31,6 +31,17 @@ export async function updateCheckoutBilling(params: UpdateBillingParams): Promis
 		authenticated,
 	} = params;
 
+	// Fork: a checkout that ships nothing has no billing form (`no-shipping-billing`).
+	const setNoShippingBilling = getCheckoutTransport().setNoShippingBillingAddress;
+	if (!hasShippingAddress && setNoShippingBilling) {
+		const result = await setNoShippingBilling(checkoutId);
+		if (result.ok) {
+			return { ok: true };
+		}
+		const message = result.error ?? result.fieldErrors?.[0]?.message ?? "Failed to update billing address";
+		return { ok: false, errors: { billing: message } };
+	}
+
 	const needsBillingForm = !sameAsBilling || !hasShippingAddress;
 
 	if (needsBillingForm) {

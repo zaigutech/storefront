@@ -511,7 +511,8 @@
 			"setDefaultAddressFailed": "기본 주소 설정에 실패했습니다",
 			"dummyNotAllowed": "이 환경에서는 테스트 결제를 사용할 수 없습니다.",
 			"stripeNotEnabled": "이 환경에서는 Stripe 결제가 활성화되어 있지 않습니다. 스토어에 NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true를 설정하세요.",
-			"signInRequired": "결제하려면 로그인해야 합니다."
+			"signInRequired": "결제하려면 로그인해야 합니다.",
+			"billingCountryUnavailable": "이 결제의 청구 국가를 설정할 수 없습니다. 고객 지원에 문의하세요."
 		},
 		"gateways": {
 			"noneTitle": "결제 게이트웨이가 설정되지 않았습니다",

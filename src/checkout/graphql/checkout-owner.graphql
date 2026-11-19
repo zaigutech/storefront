@@ -1,0 +1,13 @@
+# Fork: who owns a checkout, read as the signed-in customer (see ensure-checkout-customer.ts).
+# Saleor returns `checkout.user` only to its owner; anyone else gets a permission error on it.
+query checkoutOwner($id: ID!) {
+	me {
+		id
+	}
+	checkout(id: $id) {
+		id
+		user {
+			id
+		}
+	}
+}

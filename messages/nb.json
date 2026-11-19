@@ -523,7 +523,8 @@
 			"setDefaultAddressFailed": "Kunne ikke angi standardadresse",
 			"dummyNotAllowed": "Testbetaling er ikke tilgjengelig i dette miljøet.",
 			"stripeNotEnabled": "Stripe-betalinger er ikke aktivert i dette miljøet. Sett NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true i butikken.",
-			"signInRequired": "Du må være logget inn for å gå til kassen."
+			"signInRequired": "Du må være logget inn for å gå til kassen.",
+			"billingCountryUnavailable": "Kan ikke angi faktureringsland for denne bestillingen. Kontakt kundestøtte."
 		},
 		"gateways": {
 			"noneTitle": "Ingen betalingsgateway konfigurert",

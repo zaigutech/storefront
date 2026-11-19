@@ -522,7 +522,8 @@
 			"setDefaultAddressFailed": "Failed to set default address",
 			"dummyNotAllowed": "Test payment is not available in this environment.",
 			"stripeNotEnabled": "Stripe payments are not enabled in this environment. Set NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true on the storefront.",
-			"signInRequired": "You need to be signed in to check out."
+			"signInRequired": "You need to be signed in to check out.",
+			"billingCountryUnavailable": "This checkout cannot set a billing country. Please contact support."
 		},
 		"gateways": {
 			"noneTitle": "No payment gateway configured",

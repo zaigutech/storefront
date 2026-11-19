@@ -81,6 +81,7 @@ import { buildMarketingConsentMetadata } from "@/checkout/lib/marketing-consent"
 import { enrichCheckoutCommerceContext } from "@/checkout/lib/server/enrich-commerce-context";
 import { fetchCheckoutOnServer } from "@/checkout/lib/server/fetch-checkout";
 import { getCheckoutServerTranslations } from "@/checkout/lib/server/get-checkout-server-translations";
+import { ensureCheckoutCustomer } from "@/checkout/lib/server/ensure-checkout-customer";
 import { toCheckoutActionResult } from "@/checkout/lib/server/mutation-result";
 import { toTypedDocument } from "@/checkout/lib/server/to-typed-document";
 import { checkoutGraphqlLanguageCode, resolveCheckoutLocaleSlug } from "@/lib/checkout-locale";
@@ -520,7 +521,7 @@ export async function runCheckoutComplete(checkoutId: string): Promise<CheckoutC
 	}
 
 	// The order takes its customer from the checkout — make sure it is the signed-in one.
-	const attached = await attachCustomerToCheckout(checkoutId);
+	const attached = await ensureCheckoutCustomer(checkoutId);
 	if (!attached.ok) {
 		const { server: t } = await getCheckoutServerTranslations();
 		return {

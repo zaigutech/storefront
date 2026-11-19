@@ -64,6 +64,7 @@ const CORE_OPERATIONS = {
 
 	// Checkout surface (operation names are the GraphQL names, not the TS exports).
 	checkout: live(),
+	checkoutOwner: session(),
 	checkoutCommerceContext: live(),
 	channel: live(),
 	addressValidationRules: live(),

@@ -522,7 +522,8 @@
 			"setDefaultAddressFailed": "设置默认地址失败",
 			"dummyNotAllowed": "此环境不支持测试支付。",
 			"stripeNotEnabled": "此环境未启用 Stripe 支付。请在店面设置 NEXT_PUBLIC_ENABLE_STRIPE_PAYMENTS=true。",
-			"signInRequired": "您需要登录才能结账。"
+			"signInRequired": "您需要登录才能结账。",
+			"billingCountryUnavailable": "无法为此订单确定账单国家，请联系客服。"
 		},
 		"gateways": {
 			"noneTitle": "未配置支付网关",

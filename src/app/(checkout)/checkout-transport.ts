@@ -7,6 +7,7 @@ import {
 	syncCheckoutFromServer,
 	updateCheckoutBillingAddress,
 } from "@/app/(checkout)/actions";
+import { setNoShippingBillingAddress } from "@/app/(checkout)/no-shipping-billing-action";
 import type { CheckoutTransport } from "@/checkout/lib/checkout-transport";
 
 /**
@@ -18,6 +19,7 @@ export const nextCheckoutTransport: CheckoutTransport = {
 	fetchCheckout: syncCheckoutFromServer,
 	attachCustomer: attachCustomerToCheckout,
 	updateBillingAddress: updateCheckoutBillingAddress,
+	setNoShippingBillingAddress,
 	initializePaymentGateways,
 	initializeTransaction: initializeCheckoutTransaction,
 	processTransaction: processCheckoutTransaction,
