@@ -4,6 +4,7 @@ import { buildCheckoutPath, buildOrderStatusPath } from "@paper/session-bridge";
 import { DefaultChannelSlug } from "@/app/config";
 import { CheckoutApp } from "@/checkout/checkout-app";
 import { resolveBrowseLocaleForCheckout } from "@/lib/browse-locale-server";
+import { ensureEosClient } from "@/lib/auth/eos";
 import { requireCheckoutSignIn } from "@/lib/auth/require-checkout-sign-in";
 import { getStorefrontContent } from "@/lib/content/server";
 import { loadCheckoutMessages } from "@/i18n/load-messages";
@@ -82,6 +83,7 @@ export async function CheckoutSessionLoader({
 		await Checkout.clearCheckoutCookieByValue(checkoutIdFromUrl);
 	} else {
 		channelSlug = checkoutResult.checkout.channel.slug;
+		await ensureEosClient(checkoutResult.checkout.channel.id);
 		const checkoutIdFromChannelCookie = await Checkout.getIdFromCookies(channelSlug);
 
 		if (checkoutIdFromChannelCookie && checkoutIdFromChannelCookie !== checkoutIdFromUrl) {

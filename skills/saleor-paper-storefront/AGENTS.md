@@ -790,7 +790,7 @@ export default function AccountOverviewPage() {
 | Session resolution | `src/lib/auth/resolve-session-user.ts`                                                    | Classifies the `me` fetch; one server retry on transient errors |
 | Auth failure codes | `src/lib/auth/session-auth-state.ts`                                                      | `isDefinitiveAuthFailure` — Saleor JWT codes + message fallback |
 | OIDC flow          | `src/lib/auth/keycloak.ts`, `sign-in-attempt.ts`, `/api/auth/login`, `/api/auth/callback` | Discovery, PKCE + state cookie, code exchange                   |
-| EOS registration   | `src/lib/auth/eos.ts`                                                                     | First sign-in joins the tenant as a client                      |
+| EOS registration   | `src/lib/auth/eos.ts`                                                                     | Checkout joins its channel's tenant as a client                 |
 | Profile            | `account-context.tsx`                                                                     | `useAccountUser()`                                              |
 | Sign-in UI         | `account-login.tsx`, `sign-in-panel.tsx`                                                  | Anchors to `signInHref()`                                       |
 | Chrome refresh     | `user-menu-server.tsx`, `header-chrome-sync.tsx`, `src/lib/chrome-sync.ts`                | Header auth chrome + cross-tab sync                             |
