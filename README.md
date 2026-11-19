@@ -410,8 +410,7 @@ NEXT_PUBLIC_STOREFRONT_URL=https://shop.example.com  # Public origin: canonical 
 KEYCLOAK_ISSUER=https://auth.example.com/realms/eos  # Customer sign-in — see ./docs/configuration/keycloak.md
 KEYCLOAK_CLIENT_ID=storefront
 KEYCLOAK_CLIENT_SECRET=
-EOS_API_URL=https://api.example.com/api              # First sign-in registers the customer with EOS
-EOS_TENANT_ID=00000000-0000-7000-8000-000000000000   # EOS's seed tenant
+EOS_API_URL=https://api.example.com/api              # Checkout registers the customer with its channel's EOS tenant
 
 # Multi-channel (recommended)
 STOREFRONT_CHANNELS=us,uk,eu                         # Comma-separated allowlist — routes, revalidation, footer

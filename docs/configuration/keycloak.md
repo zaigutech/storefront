@@ -8,10 +8,13 @@ to Saleor and to EOS; neither the browser nor Saleor ever sees a password.
 ```
 browser ──/api/auth/login──▶ Keycloak pages ──code──▶ /api/auth/callback
                                                         ├─ token exchange (client secret)
-                                                        ├─ EOS: GET /auth/me, first time POST /auth/register
                                                         └─ Set-Cookie (access, refresh, id token)
 storefront server ──Authorization: Bearer <Keycloak access token>──▶ Saleor (OpenID Connect plugin)
+/checkout ──▶ EOS: GET /channels/{channel}/tenant, GET /auth/me, first time there POST /auth/register
 ```
+
+One storefront serves every tenant. The checkout's channel names the tenant (EOS owns that
+topology), and a customer becomes a client of each tenant on their first checkout in its channels.
 
 ## 1. Keycloak client
 
@@ -68,7 +71,6 @@ registration (`ClientRegistered`) and also finds it by email, so either order en
 | `KEYCLOAK_CLIENT_ID`         | `storefront`                                                          |
 | `KEYCLOAK_CLIENT_SECRET`     | from the client's Credentials tab                                     |
 | `EOS_API_URL`                | `https://api.example.com/api`                                         |
-| `EOS_TENANT_ID`              | `00000000-0000-7000-8000-000000000000` (EOS's seed tenant)            |
 
 Name, email and password changes happen in Keycloak's account console (linked from account
 settings); Saleor picks up name and email from the token on the next request.
