@@ -18,8 +18,8 @@ topology), and a customer becomes a client of each tenant on their first checkou
 
 ## 1. Keycloak client
 
-EOS provisions the realm and a confidential client `storefront` (`keycloak/provision-eos.sh`
-in the middleware repository, `EOS_STOREFRONT_URLS`). By hand, in the realm used by EOS:
+EOS provisions the realm and a confidential client `storefront` (`provision-eos.sh`
+in the keycloak repository, `EOS_STOREFRONT_URLS`). By hand, in the realm used by EOS:
 
 - Client authentication on, Standard flow only, PKCE method `S256`.
 - Valid redirect URI `<NEXT_PUBLIC_STOREFRONT_URL>/api/auth/callback`; valid post-logout redirect URIs
